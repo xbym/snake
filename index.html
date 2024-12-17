@@ -262,42 +262,38 @@
             
             <div class="column stats-container">
                 <div class="stats-box">
-                    +-------------STATS-------------+
-                    | Score: <span id="score">0</span>             |
-                    | Length: <span id="length">1</span>           |
-                    | Time: <span id="timeAlive">0</span>s         |
-                    | Changes: <span id="changes">0</span>         |
-                    +-------------------------------+
+STATS
+Score: <span id="score">0</span>
+Length: <span id="length">1</span>
+Time: <span id="timeAlive">0</span>s
+Changes: <span id="changes">0</span>
                 </div>
                 
                 <div class="direction-stats">
-                    +----------DIRECTION-STATS---------+
-                    | UP:    <span id="upSuccess">0%</span>           |
-                    | DOWN:  <span id="downSuccess">0%</span>         |
-                    | LEFT:  <span id="leftSuccess">0%</span>         |
-                    | RIGHT: <span id="rightSuccess">0%</span>        |
-                    +---------------------------------+
+DIRECTION-STATS
+UP:    <span id="upSuccess">0%</span>
+DOWN:  <span id="downSuccess">0%</span>
+LEFT:  <span id="leftSuccess">0%</span>
+RIGHT: <span id="rightSuccess">0%</span>
                 </div>
 
                 <div class="neural-stats">
-                    +----------NEURAL-NET-DATA----------+
-                    | Neurons: IN[24] HID[16] OUT[4]   |
-                    | Weights: <span id="totalWeights">384</span>     |
-                    | Entropy: <span id="entropy">0.000</span>        |
-                    | Learn Rate: <span id="learningRate">0.00</span> |
-                    | Mutation: <span id="mutationRate">0.00</span>   |
-                    | Loss: <span id="networkLoss">0.000</span>       |
-                    | Sigmoid: <span id="activation">0.00</span>      |
-                    +---------------------------------+
+NEURAL-NET-DATA
+Neurons: IN[24] HID[16] OUT[4]
+Weights: <span id="totalWeights">384</span>
+Entropy: <span id="entropy">0.000</span>
+Learn Rate: <span id="learningRate">0.00</span>
+Mutation: <span id="mutationRate">0.00</span>
+Loss: <span id="networkLoss">0.000</span>
+Sigmoid: <span id="activation">0.00</span>
                 </div>
 
                 <div class="decision-analysis">
-                    +----------DECISION-DATA-----------+
-                    | Vector: <span id="currentVector">[0,0]</span>   |
-                    | Output: <span id="layerOutput">[0,0,0,0]</span> |
-                    | Grad: <span id="gradient">0.000</span>          |
-                    | Conf: <span id="confidence">0%</span>           |
-                    +---------------------------------+
+DECISION-DATA
+Vector: <span id="currentVector">[0,0]</span>
+Output: <span id="layerOutput">[0,0,0,0]</span>
+Grad: <span id="gradient">0.000</span>
+Conf: <span id="confidence">0%</span>
                 </div>
 
                 <div class="hash-monitor">
@@ -309,7 +305,7 @@
                         </div>
                         <div class="input-group">
                             <input type="text" id="tokenAddress" placeholder="输入代币地址...">
-                            <button onclick="fetchHashes()">获��</button>
+                            <button onclick="fetchHashes()">获</button>
                         </div>
                         <div class="auto-refresh">
                             <input type="checkbox" id="autoRefresh">

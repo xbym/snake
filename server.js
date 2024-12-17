@@ -156,10 +156,13 @@ app.get('/api/token-transactions', async (req, res) => {
 
         console.log('正在获取地址的交易:', address);
 
-        const response = await axios.get(`https://public-api.solscan.io/token/transfers`, {
+        const response = await axios.get(`https://pro-api.solscan.io/v2.0/token/transfer`, {
             params: {
-                token: address,
-                limit: 10
+                address: address,
+                page: 1,
+                page_size: 10,
+                sort_by: 'block_time',
+                sort_order: 'desc'
             },
             headers: {
                 'accept': 'application/json',
@@ -168,15 +171,29 @@ app.get('/api/token-transactions', async (req, res) => {
             timeout: 5000
         });
         
-        if (!response.data || !response.data.data) {
+        if (!response.data || !response.data.success) {
             console.error('无效的响应格式:', response.data);
             return res.status(500).json({ error: 'Solscan API 返回了无效的响应' });
         }
 
-        const transactions = response.data.data.map(tx => tx.signature);
-        console.log('找到交易数:', transactions.length);
+        const transactions = response.data.data.map(tx => ({
+            signature: tx.trans_id,
+            time: tx.time,
+            from: tx.from_address,
+            to: tx.to_address,
+            amount: tx.value
+        }));
+
+        const tokenInfo = response.data.metadata.tokens[address];
         
-        res.json({ transactions });
+        res.json({ 
+            transactions,
+            tokenInfo: {
+                name: tokenInfo?.token_name || 'Unknown',
+                symbol: tokenInfo?.token_symbol || 'Unknown',
+                icon: tokenInfo?.token_icon || ''
+            }
+        });
     } catch (error) {
         console.error('错误详情:', {
             message: error.message,

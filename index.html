@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Neural Snake</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            ====================================
+            |          NEURAL SNAKE AI         |
+            ====================================
+        </div>
+        
+        <div class="game-container">
+            <div class="network-visualization">
+                <canvas id="networkCanvas" width="300" height="600"></canvas>
+            </div>
+            <canvas id="gameCanvas"></canvas>
+            
+            <div class="stats-container">
+                <div class="stats-box">
+                    +-------------STATS-------------+
+                    | Score: <span id="score">0</span>                    |
+                    | Length: <span id="length">1</span>                  |
+                    | Time Alive: <span id="timeAlive">0</span>s         |
+                    | Direction Changes: <span id="changes">0</span>      |
+                    +-------------------------------+
+                </div>
+                
+                <div class="direction-stats">
+                    +----------DIRECTION-STATS---------+
+                    | UP    Success Rate: <span id="upSuccess">0%</span>    |
+                    | DOWN  Success Rate: <span id="downSuccess">0%</span>  |
+                    | LEFT  Success Rate: <span id="leftSuccess">0%</span>  |
+                    | RIGHT Success Rate: <span id="rightSuccess">0%</span> |
+                    +---------------------------------+
+                </div>
+
+                <div class="controls">
+                    +------------CONTROLS------------+
+                    |                               |
+                    | [START] <button id="startGame">▶</button>  [PAUSE] <button id="pauseGame">⏸</button> |
+                    | [SAVE]  <button id="saveGame">💾</button>  [LOAD]  <button id="loadGame">📂</button> |
+                    |                               |
+                    +---------------------------------+
+                </div>
+
+                <div class="neural-stats">
+                    +----------NEURAL-NETWORK-DATA---------+
+                    | Neurons: INPUT[24] HIDDEN[16] OUT[4] |
+                    | Weights: <span id="totalWeights">384</span> Synapses        |
+                    | Entropy: <span id="entropy">0.000</span>                |
+                    | Learning Rate: <span id="learningRate">0.00</span>      |
+                    | Mutation Rate: <span id="mutationRate">0.00</span>      |
+                    | Network Loss: <span id="networkLoss">0.000</span>       |
+                    | Activation: sigmoid(<span id="activation">0.00</span>)   |
+                    +---------------------------------+
+                </div>
+
+                <div class="decision-analysis">
+                    +----------DECISION-ANALYSIS----------+
+                    | Current Vector: <span id="currentVector">[0.0, 0.0]</span>  |
+                    | Bias Weights: <span id="biasWeights">[...]</span>     |
+                    | Layer Output: <span id="layerOutput">[...]</span>     |
+                    | Gradient ∇: <span id="gradient">0.000</span>          |
+                    | Confidence: <span id="confidence">0%</span>           |
+                    +---------------------------------+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/matrix.js"></script>
+    <script src="js/snake.js"></script>
+    <script src="js/neuralNetwork.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 

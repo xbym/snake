@@ -110,28 +110,40 @@
             display: flex;
             gap: 20px;
             margin-top: 20px;
+            justify-content: space-between;
             align-items: flex-start;
+            padding: 0 20px;
         }
 
-        .right-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        .column {
             flex: 1;
+            min-width: 0;
+        }
+
+        .network-visualization {
+            flex: 0 0 300px;
+        }
+
+        .game-canvas {
+            flex: 0 0 auto;
         }
 
         .stats-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            flex: 0 0 400px;
+        }
+
+        .token-monitor {
+            flex: 0 0 300px;
         }
 
         .hash-monitor {
             background: #000;
             border: 1px solid #33ff33;
             padding: 10px;
-            height: calc(100vh - 600px);
-            min-height: 300px;
+            height: 600px;
             display: flex;
             flex-direction: column;
         }
@@ -140,19 +152,25 @@
             flex: 1;
             overflow-y: auto;
             margin-top: 10px;
-        }
-
-        .network-visualization {
-            margin-right: 20px;
-        }
-
-        #gameCanvas {
-            margin-right: 20px;
+            font-size: 11px;
+            word-break: break-all;
         }
 
         .stats-box, .direction-stats, .neural-stats, .decision-analysis {
             white-space: pre;
             font-family: 'Source Code Pro', monospace;
+            background: #000;
+            border: 1px solid #33ff33;
+            padding: 10px;
+        }
+
+        .hash-item {
+            padding: 5px 0;
+            border-bottom: 1px dashed #33ff33;
+        }
+
+        .hash-item:last-child {
+            border-bottom: none;
         }
     </style>
 </head>
@@ -180,53 +198,56 @@
         </div>
 
         <div class="game-container">
-            <div class="network-visualization">
+            <div class="column network-visualization">
                 <canvas id="networkCanvas" width="300" height="600"></canvas>
             </div>
-            <canvas id="gameCanvas"></canvas>
             
-            <div class="right-panel">
-                <div class="stats-container">
-                    <div class="stats-box">
-                        +-------------STATS-------------+
-                        | Score: <span id="score">0</span>                    |
-                        | Length: <span id="length">1</span>                  |
-                        | Time Alive: <span id="timeAlive">0</span>s         |
-                        | Direction Changes: <span id="changes">0</span>      |
-                        +-------------------------------+
-                    </div>
-                    
-                    <div class="direction-stats">
-                        +----------DIRECTION-STATS---------+
-                        | UP    Success Rate: <span id="upSuccess">0%</span>    |
-                        | DOWN  Success Rate: <span id="downSuccess">0%</span>  |
-                        | LEFT  Success Rate: <span id="leftSuccess">0%</span>  |
-                        | RIGHT Success Rate: <span id="rightSuccess">0%</span> |
-                        +---------------------------------+
-                    </div>
-
-                    <div class="neural-stats">
-                        +----------NEURAL-NETWORK-DATA---------+
-                        | Neurons: INPUT[24] HIDDEN[16] OUT[4] |
-                        | Weights: <span id="totalWeights">384</span> Synapses        |
-                        | Entropy: <span id="entropy">0.000</span>                |
-                        | Learning Rate: <span id="learningRate">0.00</span>      |
-                        | Mutation Rate: <span id="mutationRate">0.00</span>      |
-                        | Network Loss: <span id="networkLoss">0.000</span>       |
-                        | Activation: sigmoid(<span id="activation">0.00</span>)   |
-                        +---------------------------------+
-                    </div>
-
-                    <div class="decision-analysis">
-                        +----------DECISION-ANALYSIS----------+
-                        | Current Vector: <span id="currentVector">[0.0, 0.0]</span>  |
-                        | Layer Output: <span id="layerOutput">[0.0, 0.0, 0.0, 0.0]</span>  |
-                        | Gradient: <span id="gradient">0.000</span>            |
-                        | Confidence: <span id="confidence">0%</span>           |
-                        +---------------------------------+
-                    </div>
+            <div class="column game-canvas">
+                <canvas id="gameCanvas"></canvas>
+            </div>
+            
+            <div class="column stats-container">
+                <div class="stats-box">
+                    +-------------STATS-------------+
+                    | Score: <span id="score">0</span>                    |
+                    | Length: <span id="length">1</span>                  |
+                    | Time Alive: <span id="timeAlive">0</span>s         |
+                    | Direction Changes: <span id="changes">0</span>      |
+                    +-------------------------------+
+                </div>
+                
+                <div class="direction-stats">
+                    +----------DIRECTION-STATS---------+
+                    | UP    Success Rate: <span id="upSuccess">0%</span>    |
+                    | DOWN  Success Rate: <span id="downSuccess">0%</span>  |
+                    | LEFT  Success Rate: <span id="leftSuccess">0%</span>  |
+                    | RIGHT Success Rate: <span id="rightSuccess">0%</span> |
+                    +---------------------------------+
                 </div>
 
+                <div class="neural-stats">
+                    +----------NEURAL-NETWORK-DATA---------+
+                    | Neurons: INPUT[24] HIDDEN[16] OUT[4] |
+                    | Weights: <span id="totalWeights">384</span> Synapses        |
+                    | Entropy: <span id="entropy">0.000</span>                |
+                    | Learning Rate: <span id="learningRate">0.00</span>      |
+                    | Mutation Rate: <span id="mutationRate">0.00</span>      |
+                    | Network Loss: <span id="networkLoss">0.000</span>       |
+                    | Activation: sigmoid(<span id="activation">0.00</span>)   |
+                    +---------------------------------+
+                </div>
+
+                <div class="decision-analysis">
+                    +----------DECISION-ANALYSIS----------+
+                    | Current Vector: <span id="currentVector">[0.0, 0.0]</span>  |
+                    | Layer Output: <span id="layerOutput">[0.0, 0.0, 0.0, 0.0]</span>  |
+                    | Gradient: <span id="gradient">0.000</span>            |
+                    | Confidence: <span id="confidence">0%</span>           |
+                    +---------------------------------+
+                </div>
+            </div>
+
+            <div class="column token-monitor">
                 <div class="hash-monitor">
                     +----------TOKEN-MONITOR----------+
                     <div class="token-info" style="display: none; margin-bottom: 10px; text-align: center;">

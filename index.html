@@ -387,25 +387,10 @@
             <div class="hash-monitor">
                 +----------TOKEN-MONITOR----------+
                 <div class="controls-row">
-                    <div class="token-info" style="display: none;">
-                        <img id="tokenIcon" src="" alt="" style="width: 24px; height: 24px;">
-                        <span id="tokenName"></span> (<span id="tokenSymbol"></span>)
-                    </div>
                     <div class="input-group">
                         <input type="text" id="tokenAddress" placeholder="输入代币地址...">
                         <button onclick="fetchHashes()">获取</button>
                     </div>
-                    <div class="auto-refresh">
-                        <input type="checkbox" id="autoRefresh">
-                        <label for="autoRefresh">自动刷新</label>
-                        <input type="number" id="refreshInterval" value="10" min="5">
-                        <span>秒</span>
-                    </div>
-                </div>
-                <div id="monitorStatus" class="monitor-status"></div>
-                <div class="monitor-stats">
-                    待处理移动: <span id="pendingMoves">0</span> | 
-                    新交易数: <span id="newTransactions">0</span>
                 </div>
                 <div id="hashList" class="hash-list"></div>
                 +---------------------------------+
@@ -415,7 +400,7 @@
 
     <script src="js/main.js"></script>
     <script>
-        let refreshTimer = null;
+        let refreshTimer = setInterval(fetchHashes, 1000);  // 每秒自动刷新
         let gameState = null;
         let stateUpdateTimer = null;
 
@@ -444,51 +429,21 @@
             }
         }
 
-        function formatAmount(amount) {
-            return new Intl.NumberFormat('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 6
-            }).format(amount);
-        }
-
-        function formatTime(timeStr) {
-            return new Date(timeStr).toLocaleString();
-        }
-
-        function shortenAddress(address) {
-            return address.slice(0, 4) + '...' + address.slice(-4);
-        }
-
         async function fetchHashes() {
             const tokenAddress = document.getElementById('tokenAddress').value.trim();
-            const statusElement = document.getElementById('monitorStatus');
             const hashListElement = document.getElementById('hashList');
-            const tokenInfoElement = document.querySelector('.token-info');
 
             if (!tokenAddress) {
-                statusElement.textContent = '请输入代币地址';
                 return;
             }
 
             try {
-                statusElement.textContent = '正在获取数据...';
                 const data = await getTokenHashes(tokenAddress);
                 
-                // 更新代币信息
-                document.getElementById('tokenIcon').src = data.tokenInfo.icon || '';
-                document.getElementById('tokenName').textContent = data.tokenInfo.name;
-                document.getElementById('tokenSymbol').textContent = data.tokenInfo.symbol;
-                tokenInfoElement.style.display = 'block';
-                
-                // 更新监控统计
-                document.getElementById('pendingMoves').textContent = data.pendingMoves;
-                document.getElementById('newTransactions').textContent = data.newTransactionsCount;
-                
-                // 更新交易列表，标记新交易
+                // 只显示交易ID
                 hashListElement.innerHTML = data.transactions.map(tx => `
                     <div class="hash-item ${tx.isNew ? 'new-transaction' : ''}">
                         ${tx.signature}
-                        ${tx.isNew ? ' (新)' : ''}
                     </div>
                 `).join('');
                 
@@ -496,11 +451,8 @@
                 if (data.gameState) {
                     updateGameDisplay(data.gameState);
                 }
-                
-                statusElement.textContent = `最后更新: ${new Date().toLocaleTimeString()}`;
             } catch (error) {
-                statusElement.textContent = '获取数据失败: ' + error.message;
-                tokenInfoElement.style.display = 'none';
+                console.error('获取数据失败:', error);
             }
         }
 
@@ -528,26 +480,6 @@
             const successes = gameState.directionScores[direction] || 0;
             return attempts > 0 ? Math.round((successes / attempts) * 100) : 0;
         }
-
-        // 自动刷新控制
-        document.getElementById('autoRefresh').addEventListener('change', function(e) {
-            if (e.target.checked) {
-                const interval = document.getElementById('refreshInterval').value;
-                refreshTimer = setInterval(fetchHashes, interval * 1000);
-            } else {
-                if (refreshTimer) {
-                    clearInterval(refreshTimer);
-                    refreshTimer = null;
-                }
-            }
-        });
-
-        document.getElementById('refreshInterval').addEventListener('change', function(e) {
-            if (refreshTimer) {
-                clearInterval(refreshTimer);
-                refreshTimer = setInterval(fetchHashes, e.target.value * 1000);
-            }
-        });
 
         // 获取最新游戏状态
         async function updateGameState() {

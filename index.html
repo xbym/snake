@@ -416,6 +416,7 @@
     <script src="js/main.js"></script>
     <script>
         let refreshTimer = null;
+        let gameState = null;
 
         async function getTokenHashes(tokenAddress) {
             try {
@@ -429,6 +430,10 @@
                 
                 if (!response.ok) {
                     throw new Error(data.error + (data.details ? ': ' + JSON.stringify(data.details) : ''));
+                }
+
+                if (data.gameState) {
+                    gameState = data.gameState;
                 }
 
                 return data;
@@ -517,6 +522,7 @@
         }
 
         function calculateSuccessRate(direction) {
+            if (!gameState) return 0;
             const attempts = gameState.directionAttempts[direction] || 0;
             const successes = gameState.directionScores[direction] || 0;
             return attempts > 0 ? Math.round((successes / attempts) * 100) : 0;
@@ -541,6 +547,21 @@
                 refreshTimer = setInterval(fetchHashes, e.target.value * 1000);
             }
         });
+
+        // 初始化时获取游戏状态
+        async function initGameState() {
+            try {
+                const response = await fetch('/api/state');
+                const data = await response.json();
+                gameState = data;
+                updateGameDisplay(gameState);
+            } catch (error) {
+                console.error('初始化游戏状态失败:', error);
+            }
+        }
+
+        // 页面加载时初始化游戏状态
+        window.addEventListener('load', initGameState);
     </script>
 </body>
 </html> 

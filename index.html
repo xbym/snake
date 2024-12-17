@@ -113,7 +113,7 @@
             justify-content: center;
             align-items: flex-start;
             padding: 0 20px;
-            max-width: 1600px;
+            width: 1500px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -123,17 +123,19 @@
         }
 
         .network-visualization {
-            flex: 2;
-            max-width: 300px;
+            flex: none;
+            width: 300px;
         }
 
         .game-canvas {
-            flex: 4;
-            max-width: 600px;
+            flex: none;
+            width: 600px;
         }
 
         .stats-container {
             flex: 2;
+            width: 300px;
+            min-width: 300px;
             max-width: 300px;
             display: flex;
             flex-direction: column;
@@ -141,8 +143,8 @@
         }
 
         .token-monitor {
-            flex: 2;
-            max-width: 300px;
+            flex: none;
+            width: 300px;
         }
 
         .hash-monitor {
@@ -182,10 +184,11 @@
             background: #000;
             border: 1px solid #33ff33;
             padding: 10px;
-            font-size: 12px;
+            font-size: 11px;
             width: 100%;
             box-sizing: border-box;
             overflow-x: hidden;
+            min-width: 300px;
         }
 
         .hash-item {
@@ -208,10 +211,21 @@
             box-sizing: border-box;
         }
 
-        /* 调整状态面板中的文字对齐 */
+        /* 调整状态面板中的文字对齐和宽度 */
         .stats-box span, .direction-stats span, .neural-stats span, .decision-analysis span {
             display: inline-block;
+            min-width: 60px;
             text-align: right;
+        }
+
+        /* 修改状态面板的内容 */
+        .stats-box {
+            content: "+-------------STATS-------------+\n" +
+                    "| Score: <span id='score'>0</span>             |\n" +
+                    "| Length: <span id='length'>1</span>           |\n" +
+                    "| Time: <span id='timeAlive'>0</span>s         |\n" +
+                    "| Changes: <span id='changes'>0</span>         |\n" +
+                    "+-------------------------------+";
         }
     </style>
 </head>
@@ -252,38 +266,38 @@
                     +-------------STATS-------------+
                     | Score: <span id="score">0</span>                    |
                     | Length: <span id="length">1</span>                  |
-                    | Time Alive: <span id="timeAlive">0</span>s         |
-                    | Direction Changes: <span id="changes">0</span>      |
+                    | Time: <span id="timeAlive">0</span>s         |
+                    | Changes: <span id="changes">0</span>         |
                     +-------------------------------+
                 </div>
                 
                 <div class="direction-stats">
                     +----------DIRECTION-STATS---------+
-                    | UP    Success Rate: <span id="upSuccess">0%</span>    |
-                    | DOWN  Success Rate: <span id="downSuccess">0%</span>  |
-                    | LEFT  Success Rate: <span id="leftSuccess">0%</span>  |
-                    | RIGHT Success Rate: <span id="rightSuccess">0%</span> |
+                    | UP:    <span id="upSuccess">0%</span>           |
+                    | DOWN:  <span id="downSuccess">0%</span>         |
+                    | LEFT:  <span id="leftSuccess">0%</span>         |
+                    | RIGHT: <span id="rightSuccess">0%</span>        |
                     +---------------------------------+
                 </div>
 
                 <div class="neural-stats">
-                    +----------NEURAL-NETWORK-DATA---------+
-                    | Neurons: INPUT[24] HIDDEN[16] OUT[4] |
-                    | Weights: <span id="totalWeights">384</span> Synapses        |
-                    | Entropy: <span id="entropy">0.000</span>                |
-                    | Learning Rate: <span id="learningRate">0.00</span>      |
-                    | Mutation Rate: <span id="mutationRate">0.00</span>      |
-                    | Network Loss: <span id="networkLoss">0.000</span>       |
-                    | Activation: sigmoid(<span id="activation">0.00</span>)   |
+                    +----------NEURAL-NET-DATA----------+
+                    | Neurons: IN[24] HID[16] OUT[4]   |
+                    | Weights: <span id="totalWeights">384</span>     |
+                    | Entropy: <span id="entropy">0.000</span>        |
+                    | Learn Rate: <span id="learningRate">0.00</span> |
+                    | Mutation: <span id="mutationRate">0.00</span>   |
+                    | Loss: <span id="networkLoss">0.000</span>       |
+                    | Sigmoid: <span id="activation">0.00</span>      |
                     +---------------------------------+
                 </div>
 
                 <div class="decision-analysis">
-                    +----------DECISION-ANALYSIS----------+
-                    | Current Vector: <span id="currentVector">[0.0, 0.0]</span>  |
-                    | Layer Output: <span id="layerOutput">[0.0, 0.0, 0.0, 0.0]</span>  |
-                    | Gradient: <span id="gradient">0.000</span>            |
-                    | Confidence: <span id="confidence">0%</span>           |
+                    +----------DECISION-DATA-----------+
+                    | Vector: <span id="currentVector">[0,0]</span>   |
+                    | Output: <span id="layerOutput">[0,0,0,0]</span> |
+                    | Grad: <span id="gradient">0.000</span>          |
+                    | Conf: <span id="confidence">0%</span>           |
                     +---------------------------------+
                 </div>
             </div>

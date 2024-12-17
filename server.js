@@ -295,4 +295,11 @@ app.get('/api/token-transactions', async (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
+    
+    // 添加游戏循环，每50毫秒检查一次是否需要移动
+    setInterval(() => {
+        if (gameState.pendingMoves > 0) {
+            updateGame();
+        }
+    }, 50);
 }); 

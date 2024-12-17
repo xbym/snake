@@ -38,17 +38,6 @@
                     +---------------------------------+
                 </div>
 
-                <div class="controls">
-                    +------------CONTROLS------------+
-                    |                               |
-                    | [START] <button id="startGame">▶</button>  [PAUSE] <button id="pauseGame">⏸</button> |
-                    | [SAVE]  <button id="saveGame">💾</button>  [LOAD]  <button id="loadGame">📂</button> |
-                    | Share Code: <input id="shareCode" type="text" maxlength="6">     |
-                    | [SHARE] <button id="shareState">📤</button>  [LOAD SHARED] <button id="loadShared">📥</button> |
-                    |                               |
-                    +---------------------------------+
-                </div>
-
                 <div class="neural-stats">
                     +----------NEURAL-NETWORK-DATA---------+
                     | Neurons: INPUT[24] HIDDEN[16] OUT[4] |
@@ -64,19 +53,14 @@
                 <div class="decision-analysis">
                     +----------DECISION-ANALYSIS----------+
                     | Current Vector: <span id="currentVector">[0.0, 0.0]</span>  |
-                    | Bias Weights: <span id="biasWeights">[...]</span>     |
-                    | Layer Output: <span id="layerOutput">[...]</span>     |
-                    | Gradient ∇: <span id="gradient">0.000</span>          |
+                    | Layer Output: <span id="layerOutput">[0.0, 0.0, 0.0, 0.0]</span>  |
+                    | Gradient: <span id="gradient">0.000</span>            |
                     | Confidence: <span id="confidence">0%</span>           |
                     +---------------------------------+
                 </div>
             </div>
         </div>
     </div>
-    
-    <script src="js/matrix.js"></script>
-    <script src="js/snake.js"></script>
-    <script src="js/neuralNetwork.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html> 

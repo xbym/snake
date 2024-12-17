@@ -417,6 +417,7 @@
     <script>
         let refreshTimer = null;
         let gameState = null;
+        let stateUpdateTimer = null;
 
         async function getTokenHashes(tokenAddress) {
             try {
@@ -548,6 +549,21 @@
             }
         });
 
+        // 获取最新游戏状态
+        async function updateGameState() {
+            try {
+                const response = await fetch('/api/state');
+                const data = await response.json();
+                gameState = data;
+                
+                // 更新显示
+                document.getElementById('pendingMoves').textContent = gameState.pendingMoves;
+                updateGameDisplay(gameState);
+            } catch (error) {
+                console.error('更新游戏状态失败:', error);
+            }
+        }
+
         // 初始化时获取游戏状态
         async function initGameState() {
             try {
@@ -555,10 +571,25 @@
                 const data = await response.json();
                 gameState = data;
                 updateGameDisplay(gameState);
+
+                // 启动状态更新定时器
+                if (!stateUpdateTimer) {
+                    stateUpdateTimer = setInterval(updateGameState, 500);  // 每500ms更新一次状态
+                }
             } catch (error) {
                 console.error('初始化游戏状态失败:', error);
             }
         }
+
+        // 页面卸载时清理定时器
+        window.addEventListener('beforeunload', () => {
+            if (stateUpdateTimer) {
+                clearInterval(stateUpdateTimer);
+            }
+            if (refreshTimer) {
+                clearInterval(refreshTimer);
+            }
+        });
 
         // 页面加载时初始化游戏状态
         window.addEventListener('load', initGameState);

@@ -97,42 +97,12 @@
             width: 100%;
             box-sizing: border-box;
             border: none;
+            line-height: 1.4;
         }
 
         /* 移除状态面板中的装饰性边框字符 */
-        .stats-box {
-            content: "STATS\n" +
-                    "Score: <span id='score'>0</span>\n" +
-                    "Length: <span id='length'>1</span>\n" +
-                    "Time: <span id='timeAlive'>0</span>s\n" +
-                    "Changes: <span id='changes'>0</span>";
-        }
-
-        .direction-stats {
-            content: "DIRECTION-STATS\n" +
-                    "UP:    <span id='upSuccess'>0%</span>\n" +
-                    "DOWN:  <span id='downSuccess'>0%</span>\n" +
-                    "LEFT:  <span id='leftSuccess'>0%</span>\n" +
-                    "RIGHT: <span id='rightSuccess'>0%</span>";
-        }
-
-        .neural-stats {
-            content: "NEURAL-NET-DATA\n" +
-                    "Neurons: IN[24] HID[16] OUT[4]\n" +
-                    "Weights: <span id='totalWeights'>384</span>\n" +
-                    "Entropy: <span id='entropy'>0.000</span>\n" +
-                    "Learn Rate: <span id='learningRate'>0.00</span>\n" +
-                    "Mutation: <span id='mutationRate'>0.00</span>\n" +
-                    "Loss: <span id='networkLoss'>0.000</span>\n" +
-                    "Sigmoid: <span id='activation'>0.00</span>";
-        }
-
-        .decision-analysis {
-            content: "DECISION-DATA\n" +
-                    "Vector: <span id='currentVector'>[0,0]</span>\n" +
-                    "Output: <span id='layerOutput'>[0,0,0,0]</span>\n" +
-                    "Grad: <span id='gradient'>0.000</span>\n" +
-                    "Conf: <span id='confidence'>0%</span>";
+        .stats-box, .direction-stats, .neural-stats, .decision-analysis {
+            content: none;
         }
 
         /* 只保留游戏画布的边框 */
@@ -263,38 +233,42 @@
                 
                 <div class="column stats-container">
                     <div class="stats-box">
-                        STATS
-                        Score: <span id="score">0</span>
-                        Length: <span id="length">1</span>
-                        Time: <span id="timeAlive">0</span>s
-                        Changes: <span id="changes">0</span>
++-------------STATS-------------+
+| Score: <span id="score">0</span>             |
+| Length: <span id="length">1</span>           |
+| Time: <span id="timeAlive">0</span>s         |
+| Changes: <span id="changes">0</span>         |
++-------------------------------+
                     </div>
                     
                     <div class="direction-stats">
-                        DIRECTION-STATS
-                        UP:    <span id="upSuccess">0%</span>
-                        DOWN:  <span id="downSuccess">0%</span>
-                        LEFT:  <span id="leftSuccess">0%</span>
-                        RIGHT: <span id="rightSuccess">0%</span>
++----------DIRECTION-STATS---------+
+| UP:    <span id="upSuccess">0%</span>           |
+| DOWN:  <span id="downSuccess">0%</span>         |
+| LEFT:  <span id="leftSuccess">0%</span>         |
+| RIGHT: <span id="rightSuccess">0%</span>        |
++---------------------------------+
                     </div>
 
                     <div class="neural-stats">
-                        NEURAL-NET-DATA
-                        Neurons: IN[24] HID[16] OUT[4]
-                        Weights: <span id="totalWeights">384</span>
-                        Entropy: <span id="entropy">0.000</span>
-                        Learn Rate: <span id="learningRate">0.00</span>
-                        Mutation: <span id="mutationRate">0.00</span>
-                        Loss: <span id="networkLoss">0.000</span>
-                        Sigmoid: <span id="activation">0.00</span>
++----------NEURAL-NET-DATA----------+
+| Neurons: IN[24] HID[16] OUT[4]   |
+| Weights: <span id="totalWeights">384</span>     |
+| Entropy: <span id="entropy">0.000</span>        |
+| Learn Rate: <span id="learningRate">0.00</span> |
+| Mutation: <span id="mutationRate">0.00</span>   |
+| Loss: <span id="networkLoss">0.000</span>       |
+| Sigmoid: <span id="activation">0.00</span>      |
++---------------------------------+
                     </div>
 
                     <div class="decision-analysis">
-                        DECISION-DATA
-                        Vector: <span id="currentVector">[0,0]</span>
-                        Output: <span id="layerOutput">[0,0,0,0]</span>
-                        Grad: <span id="gradient">0.000</span>
-                        Conf: <span id="confidence">0%</span>
++----------DECISION-DATA-----------+
+| Vector: <span id="currentVector">[0,0]</span>   |
+| Output: <span id="layerOutput">[0,0,0,0]</span> |
+| Grad: <span id="gradient">0.000</span>          |
+| Conf: <span id="confidence">0%</span>           |
++---------------------------------+
                     </div>
                 </div>
             </div>

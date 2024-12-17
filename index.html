@@ -144,6 +144,7 @@
             flex-direction: column;
             gap: 10px;
             background: #000;
+            color: #33ff33;
         }
 
         .token-monitor {
@@ -223,6 +224,7 @@
             box-sizing: border-box;
             overflow-x: hidden;
             min-width: 300px;
+            color: #33ff33;
         }
 
         .hash-item {
@@ -250,16 +252,38 @@
             display: inline-block;
             min-width: 60px;
             text-align: right;
+            margin-left: 5px;
+        }
+
+        /* 修改状态面板的内容结构 */
+        .stats-box {
+            content: none;
         }
 
         /* 修改状态面板的内容 */
-        .stats-box {
-            content: "+-------------STATS-------------+\n" +
-                    "| Score: <span id='score'>0</span>             |\n" +
-                    "| Length: <span id='length'>1</span>           |\n" +
-                    "| Time: <span id='timeAlive'>0</span>s         |\n" +
-                    "| Changes: <span id='changes'>0</span>         |\n" +
-                    "+-------------------------------+";
+        .stats-container {
+            flex: 0 0 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #000;
+            color: #33ff33;
+        }
+
+        /* 确保所有文本都是绿色 */
+        .stats-container, .stats-container * {
+            color: #33ff33;
+        }
+
+        /* 调整面板间距 */
+        .stats-container > div {
+            margin-bottom: 15px;
+        }
+
+        /* 确保文本不会被截断 */
+        .stats-container > div {
+            width: 100%;
+            overflow: visible;
         }
     </style>
 </head>

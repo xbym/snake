@@ -35,7 +35,7 @@ let gameState = {
     pendingMoves: 0,  // 待处理的移动次数
     maxMovesPerSecond: 2,  // 每秒最大移动次数
     deaths: 0,  // 添加死亡计数
-    maxFoods: 5,  // 最大食物数量
+    maxFoods: 3,  // 修改最大食物数量为3
     foodInterval: 30000  // 食物生成间隔（30秒）
 };
 

@@ -33,7 +33,7 @@ let gameState = {
     boardHeight: 30,  // 600/20
     lastMoveTime: Date.now(),  // 上次移动时间
     pendingMoves: 0,  // 待处理的移动次数
-    maxMovesPerSecond: 2,  // 每秒最大移动次数
+    maxMovesPerSecond: 1,  // 每秒最多1格
     deaths: 0,  // 添加死亡计数
     maxFoods: 3,  // 修改最大食物数量为3
     foodInterval: 30000  // 食物生成间隔（30秒）

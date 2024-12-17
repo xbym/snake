@@ -68,15 +68,87 @@ class Game {
                 value: 0
             }))
         };
+        
+        // 每5秒自动同步一次状态
+        setInterval(() => this.syncState(), 5000);
+    }
+
+    // 同步状态到服务器
+    async syncState() {
+        if (!this.snake) return;
+
+        const gameState = {
+            snake: this.snake.snake,
+            foods: this.snake.foods,
+            direction: this.snake.direction,
+            score: this.snake.score,
+            directionScores: this.directionScores,
+            directionAttempts: this.directionAttempts,
+            startTime: this.startTime,
+            directionChanges: this.directionChanges,
+            lastChangeTime: this.lastChangeTime,
+            lastUpdate: Date.now()
+        };
+
+        try {
+            await fetch('/api/state', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(gameState)
+            });
+        } catch (error) {
+            console.error('Error syncing state:', error);
+        }
+    }
+
+    // 从服务器加载状态
+    async loadState() {
+        try {
+            const response = await fetch('/api/state');
+            const gameState = await response.json();
+            
+            if (!gameState) return;
+
+            // 创建新的蛇实例
+            this.snake = new Snake(this.canvas);
+            
+            // 恢复所有状态
+            this.snake.snake = gameState.snake;
+            this.snake.foods = gameState.foods;
+            this.snake.direction = gameState.direction;
+            this.snake.score = gameState.score;
+            this.directionScores = gameState.directionScores;
+            this.directionAttempts = gameState.directionAttempts;
+            this.startTime = gameState.startTime;
+            this.directionChanges = gameState.directionChanges;
+            this.lastChangeTime = gameState.lastChangeTime;
+
+            // 更新显示
+            this.snake.draw();
+            this.updateStats();
+        } catch (error) {
+            console.error('Error loading state:', error);
+        }
     }
 
     start() {
         if (!this.snake) {
-            this.snake = new Snake(this.canvas);
+            // 尝试加载服务器状态
+            this.loadState().then(() => {
+                if (!this.snake) {
+                    // 如果没有状态，创建新的蛇
+                    this.snake = new Snake(this.canvas);
+                }
+                this.isPlaying = true;
+                this.startTime = Date.now();
+                this.gameLoop();
+            });
+        } else {
+            this.isPlaying = true;
+            this.gameLoop();
         }
-        this.isPlaying = true;
-        this.startTime = Date.now();
-        this.gameLoop();
     }
 
     pause() {
@@ -89,23 +161,19 @@ class Game {
         if (this.snake) {
             const oldScore = this.snake.score;
             
-            // 调用改变方向的逻辑
             this.changeDirection();
-            
-            // 更新蛇的位置
             this.snake.update();
             
-            // 检查是否吃到食物
             if (this.snake.score > oldScore) {
                 this.onFoodEaten();
             }
 
-            // 更新显示
+            // 每次更新后自动保存
+            this.saveGame();
+
             this.snake.draw();
             this.updateStats();
-            this.updateNeuralStats();  // 添加神经网络数据更新
-            
-            // 添加网络可视化更新
+            this.updateNeuralStats();
             this.drawNetwork();
         }
         
@@ -217,7 +285,7 @@ class Game {
                     y: current.y + dir.y
                 };
                 
-                // 如��这个方向可以移动且未访问过
+                // 如果这个方向可以移动且未访问过
                 if (!this.willCollide(next) && !visited.has(`${next.x},${next.y}`)) {
                     queue.push(next);
                 }
@@ -442,6 +510,138 @@ class Game {
         ctx.fillText(`GEN: ${Math.floor(Date.now() / 5000)}`, 20, 20);
         ctx.fillText(`MUTATION RATE: ${this.neuralMetrics.mutationRate.toFixed(1)}%`, 20, 40);
         ctx.fillText(`SCORE: ${this.snake ? this.snake.score : 0}`, 20, this.networkCanvas.height - 40);
+    }
+
+    // 添加自动加载功能
+    autoLoadGame() {
+        const savedState = localStorage.getItem('snakeGameState');
+        if (savedState) {
+            try {
+                const gameState = JSON.parse(savedState);
+                
+                // 创建新的蛇实例
+                this.snake = new Snake(this.canvas);
+                
+                // 恢复蛇的状态
+                this.snake.snake = gameState.snake;
+                this.snake.foods = gameState.foods;
+                this.snake.direction = gameState.direction;
+                this.snake.score = gameState.score;
+                
+                // 恢复游戏统计数据
+                this.directionScores = gameState.directionScores;
+                this.directionAttempts = gameState.directionAttempts;
+                this.startTime = gameState.startTime;
+                this.directionChanges = gameState.directionChanges;
+                this.lastChangeTime = gameState.lastChangeTime;
+
+                // 更新显示
+                this.snake.draw();
+                this.updateStats();
+                console.log('Previous game state loaded!');
+            } catch (error) {
+                console.log('Error loading previous game state:', error);
+                localStorage.removeItem('snakeGameState');  // 清除无效的存档
+            }
+        }
+    }
+
+    setupSharing() {
+        document.getElementById('shareState').onclick = () => this.shareState();
+        document.getElementById('loadShared').onclick = () => this.loadShared();
+    }
+
+    // 生成6位随机代码
+    generateShareCode() {
+        return Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
+
+    // 分享游戏状态
+    async shareState() {
+        if (!this.snake) return;
+
+        const gameState = {
+            snake: this.snake.snake,
+            foods: this.snake.foods,
+            direction: this.snake.direction,
+            score: this.snake.score,
+            directionScores: this.directionScores,
+            directionAttempts: this.directionAttempts,
+            startTime: this.startTime,
+            directionChanges: this.directionChanges,
+            lastChangeTime: this.lastChangeTime
+        };
+
+        const shareCode = this.generateShareCode();
+        
+        try {
+            // 使用 jsonbin.io API
+            const response = await fetch('https://api.jsonbin.io/v3/b', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': '$2b$10$YOUR_JSONBIN_KEY',  // 需要替换成你的 API key
+                    'X-Bin-Name': shareCode
+                },
+                body: JSON.stringify(gameState)
+            });
+
+            if (response.ok) {
+                document.getElementById('shareCode').value = shareCode;
+                alert(`Share Code: ${shareCode}\nShare this code with others to share your progress!`);
+            } else {
+                alert('Failed to generate share code. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error sharing state:', error);
+            alert('Failed to share state. Please try again.');
+        }
+    }
+
+    // 加载分享的状态
+    async loadShared() {
+        const shareCode = document.getElementById('shareCode').value;
+        if (!shareCode) {
+            alert('Please enter a share code!');
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${shareCode}/latest`, {
+                headers: {
+                    'X-Master-Key': '$2b$10$YOUR_JSONBIN_KEY'  // 需要替换成你的 API key
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const gameState = data.record;
+
+                // 创建新的蛇实例
+                this.snake = new Snake(this.canvas);
+                
+                // 恢复所有状态
+                this.snake.snake = gameState.snake;
+                this.snake.foods = gameState.foods;
+                this.snake.direction = gameState.direction;
+                this.snake.score = gameState.score;
+                this.directionScores = gameState.directionScores;
+                this.directionAttempts = gameState.directionAttempts;
+                this.startTime = gameState.startTime;
+                this.directionChanges = gameState.directionChanges;
+                this.lastChangeTime = gameState.lastChangeTime;
+
+                // 更新显示
+                this.snake.draw();
+                this.updateStats();
+                alert('Game state loaded successfully!');
+            } else {
+                alert('Invalid share code or state not found.');
+            }
+        } catch (error) {
+            console.error('Error loading shared state:', error);
+            alert('Failed to load shared state. Please try again.');
+        }
     }
 }
 

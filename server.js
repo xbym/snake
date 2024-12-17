@@ -154,7 +154,10 @@ app.get('/api/token-transactions', async (req, res) => {
             return res.status(400).json({ error: 'Token address is required' });
         }
 
-        const response = await axios.get(`https://public-api.solscan.io/token/transfers`, {
+        console.log('Fetching transactions for address:', address);
+        console.log('Using API key:', process.env.SOLSCAN_API_KEY);
+
+        const response = await axios.get(`https://api.solscan.io/token/transfers`, {
             params: {
                 token: address,
                 limit: 10,
@@ -166,12 +169,36 @@ app.get('/api/token-transactions', async (req, res) => {
             }
         });
 
+        console.log('Solscan API response status:', response.status);
+        
+        if (!response.data || !response.data.data) {
+            console.error('Invalid response format:', response.data);
+            return res.status(500).json({ error: 'Invalid response from Solscan API' });
+        }
+
         // 提取交易哈希
         const transactions = response.data.data.map(tx => tx.signature);
+        console.log('Found transactions:', transactions.length);
+        
         res.json({ transactions });
     } catch (error) {
-        console.error('Error fetching token transactions:', error);
-        res.status(500).json({ error: 'Failed to fetch token transactions' });
+        console.error('Error details:', {
+            message: error.message,
+            response: error.response ? {
+                status: error.response.status,
+                data: error.response.data
+            } : 'No response',
+            config: error.config ? {
+                url: error.config.url,
+                headers: error.config.headers,
+                params: error.config.params
+            } : 'No config'
+        });
+        
+        res.status(500).json({ 
+            error: 'Failed to fetch token transactions',
+            details: error.response ? error.response.data : error.message
+        });
     }
 });
 

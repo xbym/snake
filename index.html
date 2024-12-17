@@ -158,14 +158,15 @@
                     }
                 });
                 
+                const data = await response.json();
+                
                 if (!response.ok) {
-                    throw new Error('API request failed');
+                    throw new Error(data.error + (data.details ? ': ' + JSON.stringify(data.details) : ''));
                 }
 
-                const data = await response.json();
                 return data.transactions;
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error details:', error);
                 throw error;
             }
         }

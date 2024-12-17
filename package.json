@@ -1,12 +1,12 @@
 {
-  "name": "neural-snake",
+  "name": "solana-token-tracker",
   "version": "1.0.0",
+  "description": "Track Solana token transactions",
+  "main": "token_transactions.js",
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1"
+    "axios": "^1.6.2"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node token_transactions.js"
   }
 }

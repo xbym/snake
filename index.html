@@ -456,18 +456,46 @@
                 // 更新交易列表
                 hashListElement.innerHTML = data.transactions.map(tx => `
                     <div class="hash-item">
-                        <div>交易ID: ${shortenAddress(tx.signature)}</div>
-                        <div>时间: ${formatTime(tx.time)}</div>
-                        <div>从: ${shortenAddress(tx.from)} 到: ${shortenAddress(tx.to)}</div>
-                        <div>数量: ${formatAmount(tx.amount)}</div>
+                        <span class="time">${formatTime(tx.time)}</span>
+                        <span>ID: ${shortenAddress(tx.signature)}</span>
+                        <span>${shortenAddress(tx.from)} → ${shortenAddress(tx.to)}</span>
+                        <span class="amount">${formatAmount(tx.amount)}</span>
                     </div>
                 `).join('');
+                
+                // 更新游戏状态
+                if (data.gameState) {
+                    updateGameDisplay(data.gameState);
+                }
                 
                 statusElement.textContent = `最后更新: ${new Date().toLocaleTimeString()}`;
             } catch (error) {
                 statusElement.textContent = '获取数据失败: ' + error.message;
                 tokenInfoElement.style.display = 'none';
             }
+        }
+
+        // 更新游戏显示
+        function updateGameDisplay(gameState) {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('length').textContent = gameState.snake.length;
+            document.getElementById('timeAlive').textContent = Math.floor((Date.now() - gameState.startTime) / 1000);
+            document.getElementById('changes').textContent = gameState.directionChanges;
+
+            // 更新方向成功率
+            document.getElementById('upSuccess').textContent = calculateSuccessRate('up') + '%';
+            document.getElementById('downSuccess').textContent = calculateSuccessRate('down') + '%';
+            document.getElementById('leftSuccess').textContent = calculateSuccessRate('left') + '%';
+            document.getElementById('rightSuccess').textContent = calculateSuccessRate('right') + '%';
+
+            // 更新游戏画布
+            drawGame(gameState);
+        }
+
+        function calculateSuccessRate(direction) {
+            const attempts = gameState.directionAttempts[direction] || 0;
+            const successes = gameState.directionScores[direction] || 0;
+            return attempts > 0 ? Math.round((successes / attempts) * 100) : 0;
         }
 
         // 自动刷新控制

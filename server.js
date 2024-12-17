@@ -134,9 +134,6 @@ function changeDirection() {
     gameState.directionChanges++;
 }
 
-// 每150ms更新一次游戏状态
-setInterval(updateGame, 150);
-
 app.use(cors());
 app.use(express.json());
 app.use(express.static('.')); // 服务静态文件
@@ -146,7 +143,13 @@ app.get('/api/state', (req, res) => {
     res.json(gameState);
 });
 
-// 代理 Solscan API 调用
+// 添加手动更新函数
+app.post('/api/update-game', (req, res) => {
+    updateGame();
+    res.json(gameState);
+});
+
+// 修改代币交易API，使其在获取新交易时触发游戏更新
 app.get('/api/token-transactions', async (req, res) => {
     try {
         const { address } = req.query;
@@ -176,6 +179,9 @@ app.get('/api/token-transactions', async (req, res) => {
             return res.status(500).json({ error: 'Solscan API 返回了无效的响应' });
         }
 
+        // 获取新交易后更新游戏状态
+        updateGame();
+
         const transactions = response.data.data.map(tx => ({
             signature: tx.trans_id,
             time: tx.time,
@@ -192,7 +198,8 @@ app.get('/api/token-transactions', async (req, res) => {
                 name: tokenInfo?.token_name || 'Unknown',
                 symbol: tokenInfo?.token_symbol || 'Unknown',
                 icon: tokenInfo?.token_icon || ''
-            }
+            },
+            gameState  // 返回更新后的游戏状态
         });
     } catch (error) {
         console.error('错误详情:', {

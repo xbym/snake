@@ -33,7 +33,10 @@ let gameState = {
     boardHeight: 30,  // 600/20
     lastMoveTime: Date.now(),  // 上次移动时间
     pendingMoves: 0,  // 待处理的移动次数
-    maxMovesPerSecond: 2  // 每秒最大移动次数
+    maxMovesPerSecond: 2,  // 每秒最大移动次数
+    deaths: 0,  // 添加死亡计数
+    maxFoods: 5,  // 最大食物数量
+    foodInterval: 30000  // 食物生成间隔（30秒）
 };
 
 // 存储已知的交易ID
@@ -44,6 +47,23 @@ function updateGame() {
     const now = Date.now();
     const timeSinceLastMove = now - gameState.lastMoveTime;
     
+    // 检查是否需要生成新食物
+    if (gameState.foods.length === 0) {
+        // 如果没有食物，立即生成一个
+        const newFood = generateNewFood();
+        if (newFood) {
+            gameState.foods.push(newFood);
+        }
+        gameState.lastFoodTime = now;
+    } else if (now - gameState.lastFoodTime >= gameState.foodInterval && gameState.foods.length < gameState.maxFoods) {
+        // 每30秒尝试生成一个新食物
+        const newFood = generateNewFood();
+        if (newFood) {
+            gameState.foods.push(newFood);
+        }
+        gameState.lastFoodTime = now;
+    }
+
     // 检查是否可以移动
     if (timeSinceLastMove >= (1000 / gameState.maxMovesPerSecond) && gameState.pendingMoves > 0) {
         // 移动蛇
@@ -56,6 +76,12 @@ function updateGame() {
         newHead.x = (newHead.x + gameState.boardWidth) % gameState.boardWidth;
         newHead.y = (newHead.y + gameState.boardHeight) % gameState.boardHeight;
 
+        // 检查自身碰撞
+        if (checkCollision(newHead)) {
+            resetSnake();
+            return true;
+        }
+
         // 检查是否吃到食物
         const foodIndex = gameState.foods.findIndex(food => 
             food.x === newHead.x && food.y === newHead.y
@@ -65,20 +91,14 @@ function updateGame() {
             // 吃到食物
             gameState.foods.splice(foodIndex, 1);
             gameState.score++;
-            // 不删除尾部（蛇变长）
-            
-            // 生成新食物
-            let newFood;
-            do {
-                newFood = {
-                    x: Math.floor(Math.random() * gameState.boardWidth),
-                    y: Math.floor(Math.random() * gameState.boardHeight)
-                };
-            } while (
-                gameState.snake.some(segment => segment.x === newFood.x && segment.y === newFood.y) ||
-                gameState.foods.some(food => food.x === newFood.x && food.y === newFood.y)
-            );
-            gameState.foods.push(newFood);
+            // 如果没有食物了，立即生成一个新的
+            if (gameState.foods.length === 0) {
+                const newFood = generateNewFood();
+                if (newFood) {
+                    gameState.foods.push(newFood);
+                }
+                gameState.lastFoodTime = now;
+            }
 
             // 更新方向得分
             const currentDirName = getDirName(gameState.direction);
@@ -133,6 +153,61 @@ function changeDirection() {
     gameState.directionAttempts[dirName]++;
     gameState.direction = randomDir;
     gameState.directionChanges++;
+}
+
+function resetSnake() {
+    // 保持方向权重和分数不变
+    const savedDirectionScores = {...gameState.directionScores};
+    const savedDirectionAttempts = {...gameState.directionAttempts};
+    const savedScore = gameState.score;
+    const savedDeaths = gameState.deaths;
+    
+    // 重置蛇的位置和长度
+    gameState.snake = [{x: 20, y: 15}];
+    gameState.direction = {x: 1, y: 0};
+    gameState.directionChanges = 0;
+    gameState.lastChangeTime = Date.now();
+    gameState.deaths = savedDeaths + 1;
+    
+    // 恢复保存的数据
+    gameState.directionScores = savedDirectionScores;
+    gameState.directionAttempts = savedDirectionAttempts;
+    gameState.score = savedScore;
+    
+    // 重置时确保至少有一个食物
+    if (gameState.foods.length === 0) {
+        const newFood = generateNewFood();
+        if (newFood) {
+            gameState.foods.push(newFood);
+        }
+        gameState.lastFoodTime = Date.now();
+    }
+}
+
+function checkCollision(head) {
+    // 检查是否与自身碰撞（从第二个身体段开始检查）
+    return gameState.snake.slice(1).some(segment => 
+        segment.x === head.x && segment.y === head.y
+    );
+}
+
+// 生成新食物的函数
+function generateNewFood() {
+    if (gameState.foods.length >= gameState.maxFoods) {
+        return null;  // 如果已达到最大食物数量，不生成新食物
+    }
+
+    let newFood;
+    do {
+        newFood = {
+            x: Math.floor(Math.random() * gameState.boardWidth),
+            y: Math.floor(Math.random() * gameState.boardHeight)
+        };
+    } while (
+        gameState.snake.some(segment => segment.x === newFood.x && segment.y === newFood.y) ||
+        gameState.foods.some(food => food.x === newFood.x && food.y === newFood.y)
+    );
+    return newFood;
 }
 
 app.use(cors());

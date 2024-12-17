@@ -348,6 +348,7 @@
 | Length: <span id="length">1</span>                        |
 | Time: <span id="timeAlive">0</span>s                     |
 | Changes: <span id="changes">0</span>                      |
+| Deaths: <span id="deaths">0</span>                      |
 +------------------------------------------+
                     </div>
                     
@@ -503,6 +504,7 @@
             document.getElementById('length').textContent = gameState.snake.length;
             document.getElementById('timeAlive').textContent = Math.floor((Date.now() - gameState.startTime) / 1000);
             document.getElementById('changes').textContent = gameState.directionChanges;
+            document.getElementById('deaths').textContent = gameState.deaths;
 
             // 更新方向成功率
             document.getElementById('upSuccess').textContent = calculateSuccessRate('up') + '%';

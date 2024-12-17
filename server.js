@@ -79,6 +79,7 @@ function updateGame() {
         // 检查自身碰撞
         if (checkCollision(newHead)) {
             resetSnake();
+            gameState.pendingMoves = Math.max(0, gameState.pendingMoves - 1);  // 确保碰撞也消耗一次移动
             return true;
         }
 
@@ -88,10 +89,9 @@ function updateGame() {
         );
 
         if (foodIndex !== -1) {
-            // 吃到食物
             gameState.foods.splice(foodIndex, 1);
             gameState.score++;
-            // 如果没有食物了，立即生成一个新的
+            
             if (gameState.foods.length === 0) {
                 const newFood = generateNewFood();
                 if (newFood) {
@@ -100,29 +100,25 @@ function updateGame() {
                 gameState.lastFoodTime = now;
             }
 
-            // 更新方向得分
             const currentDirName = getDirName(gameState.direction);
             gameState.directionScores[currentDirName] = (gameState.directionScores[currentDirName] || 0) + 1;
         } else {
-            // 没吃到食物，删除尾部
             gameState.snake.pop();
         }
 
-        // 添加新头部
         gameState.snake.unshift(newHead);
         gameState.lastMoveTime = now;
-        gameState.pendingMoves--;
+        gameState.pendingMoves = Math.max(0, gameState.pendingMoves - 1);  // 使用Math.max确保不会出现负数
 
-        // 每5秒改变一次方向
         if (now - gameState.lastChangeTime >= 5000) {
             changeDirection();
             gameState.lastChangeTime = now;
         }
 
-        return true;  // 移动成功
+        return true;
     }
 
-    return false;  // 未移动
+    return false;
 }
 
 // 获取方向名称
@@ -268,7 +264,9 @@ app.get('/api/token-transactions', async (req, res) => {
         newTransactions.forEach(tx => knownTransactions.add(tx.signature));
 
         // 为每个新交易添加一个待处理的移动
-        gameState.pendingMoves += newTransactions.length;
+        if (newTransactions.length > 0) {
+            gameState.pendingMoves += newTransactions.length;
+        }
         
         // 尝试更新游戏状态
         updateGame();

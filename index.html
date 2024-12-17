@@ -291,6 +291,21 @@
         .hash-list::-webkit-scrollbar-thumb:hover {
             background: #29cc29;
         }
+
+        .monitor-stats {
+            padding: 5px 10px;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 12px;
+            color: #33ff33;
+            border-left: 2px solid #33ff33;
+            margin: 5px 0;
+            background: rgba(51, 255, 51, 0.02);
+        }
+
+        .hash-item.new-transaction {
+            border-left: 2px solid #ff3333;
+            background: rgba(255, 51, 51, 0.02);
+        }
     </style>
 </head>
 <body>
@@ -387,6 +402,10 @@
                     </div>
                 </div>
                 <div id="monitorStatus" class="monitor-status"></div>
+                <div class="monitor-stats">
+                    待处理移动: <span id="pendingMoves">0</span> | 
+                    新交易数: <span id="newTransactions">0</span>
+                </div>
                 <div id="hashList" class="hash-list"></div>
                 +---------------------------------+
             </div>
@@ -454,9 +473,16 @@
                 document.getElementById('tokenSymbol').textContent = data.tokenInfo.symbol;
                 tokenInfoElement.style.display = 'block';
                 
-                // 更新交易列表，只显示交易ID
+                // 更新监控统计
+                document.getElementById('pendingMoves').textContent = data.pendingMoves;
+                document.getElementById('newTransactions').textContent = data.newTransactionsCount;
+                
+                // 更新交易列表，标记新交易
                 hashListElement.innerHTML = data.transactions.map(tx => `
-                    <div class="hash-item">${tx.signature}</div>
+                    <div class="hash-item ${tx.isNew ? 'new-transaction' : ''}">
+                        ${tx.signature}
+                        ${tx.isNew ? ' (新)' : ''}
+                    </div>
                 `).join('');
                 
                 // 更新游戏状态

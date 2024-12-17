@@ -113,7 +113,7 @@
             justify-content: center;
             align-items: flex-start;
             padding: 0 20px;
-            max-width: 1800px;
+            max-width: 1600px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -123,22 +123,26 @@
         }
 
         .network-visualization {
-            flex: 0 0 300px;
+            flex: 2;
+            max-width: 300px;
         }
 
         .game-canvas {
-            flex: 0 0 600px;
+            flex: 4;
+            max-width: 600px;
         }
 
         .stats-container {
+            flex: 2;
+            max-width: 300px;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            flex: 0 0 350px;
         }
 
         .token-monitor {
-            flex: 0 0 350px;
+            flex: 2;
+            max-width: 300px;
         }
 
         .hash-monitor {
@@ -148,11 +152,14 @@
             height: 600px;
             display: flex;
             flex-direction: column;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         #gameCanvas {
-            width: 600px;
+            width: 100%;
             height: 600px;
+            max-width: 600px;
             border: 1px solid #33ff33;
         }
 
@@ -175,6 +182,10 @@
             background: #000;
             border: 1px solid #33ff33;
             padding: 10px;
+            font-size: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden;
         }
 
         .hash-item {
@@ -184,6 +195,23 @@
 
         .hash-item:last-child {
             border-bottom: none;
+        }
+
+        #networkCanvas {
+            width: 100%;
+            height: 600px;
+            max-width: 300px;
+        }
+
+        /* 确保所有内容都使用 border-box */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* 调整状态面板中的文字对齐 */
+        .stats-box span, .direction-stats span, .neural-stats span, .decision-analysis span {
+            display: inline-block;
+            text-align: right;
         }
     </style>
 </head>

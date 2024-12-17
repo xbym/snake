@@ -46,24 +46,34 @@
         .social-button {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
+            gap: 6px;
+            padding: 4px 12px;
             background: #000;
             color: #33ff33;
             text-decoration: none;
             font-family: 'Source Code Pro', monospace;
+            font-size: 12px;
             transition: all 0.3s ease;
+            border: 1px solid #33ff33;
+            border-radius: 3px;
         }
 
         .social-button:hover {
             background: rgba(51, 255, 51, 0.1);
         }
 
+        .social-button img {
+            width: 14px;
+            height: 14px;
+            filter: invert(87%) sepia(12%) saturate(2089%) hue-rotate(67deg) brightness(97%) contrast(104%);
+        }
+
         .header {
             color: #33ff33;
             text-align: center;
             font-family: 'Source Code Pro', monospace;
-            margin: 20px 0;
+            margin: 10px 0;
+            font-size: 14px;
         }
 
         /* 移除状态面板的边框和装饰 */
@@ -173,6 +183,13 @@
             border-left: 2px solid #33ff33;
             margin-bottom: 5px;
             background: rgba(51, 255, 51, 0.02);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
         }
     </style>
 </head>

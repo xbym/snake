@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const axios = require('axios');
+require('dotenv').config();
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -141,6 +144,35 @@ app.use(express.static('.')); // 服务静态文件
 // 获取游戏状态
 app.get('/api/state', (req, res) => {
     res.json(gameState);
+});
+
+// 代理 Solscan API 调用
+app.get('/api/token-transactions', async (req, res) => {
+    try {
+        const { address } = req.query;
+        if (!address) {
+            return res.status(400).json({ error: 'Token address is required' });
+        }
+
+        const response = await axios.get(`https://public-api.solscan.io/token/transfers`, {
+            params: {
+                token: address,
+                limit: 10,
+                offset: 0
+            },
+            headers: {
+                'accept': 'application/json',
+                'token': process.env.SOLSCAN_API_KEY
+            }
+        });
+
+        // 提取交易哈希
+        const transactions = response.data.data.map(tx => tx.signature);
+        res.json({ transactions });
+    } catch (error) {
+        console.error('Error fetching token transactions:', error);
+        res.status(500).json({ error: 'Failed to fetch token transactions' });
+    }
 });
 
 app.listen(port, () => {

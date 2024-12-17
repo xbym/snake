@@ -7,153 +7,6 @@
     <style>
         .hash-monitor {
             background: #000;
-            border: 1px solid #33ff33;
-            padding: 10px;
-            margin-top: 20px;
-        }
-        .hash-monitor h3 {
-            margin-top: 0;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #33ff33;
-        }
-        .input-group {
-            margin-bottom: 10px;
-        }
-        .hash-monitor input[type="text"] {
-            background: #000;
-            border: 1px solid #33ff33;
-            color: #33ff33;
-            padding: 5px;
-            width: 200px;
-            margin-right: 5px;
-            font-family: 'Source Code Pro', monospace;
-        }
-        .hash-monitor button {
-            background: #000;
-            border: 1px solid #33ff33;
-            color: #33ff33;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-family: 'Source Code Pro', monospace;
-        }
-        .hash-monitor button:hover {
-            background: #33ff33;
-            color: #000;
-        }
-        .hash-list {
-            font-size: 11px;
-            word-break: break-all;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        .hash-item {
-            padding: 3px 0;
-            border-bottom: 1px dashed #33ff33;
-        }
-        .monitor-status {
-            color: #ff3333;
-            margin-top: 5px;
-            font-style: italic;
-            font-size: 12px;
-        }
-        .auto-refresh {
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 12px;
-        }
-        .auto-refresh input[type="checkbox"] {
-            margin: 0;
-        }
-        .auto-refresh input[type="number"] {
-            width: 50px;
-            padding: 2px;
-        }
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .social-button {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border: 1px solid #33ff33;
-            background: #000;
-            color: #33ff33;
-            text-decoration: none;
-            font-family: 'Source Code Pro', monospace;
-            transition: all 0.3s ease;
-            border-radius: 4px;
-        }
-
-        .social-button:hover {
-            background: #33ff33;
-            color: #000;
-        }
-
-        .social-button img {
-            width: 20px;
-            height: 20px;
-            filter: invert(87%) sepia(12%) saturate(2089%) hue-rotate(67deg) brightness(97%) contrast(104%);
-        }
-
-        .social-button:hover img {
-            filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(324deg) brightness(96%) contrast(104%);
-        }
-
-        .game-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-top: 20px;
-            align-items: center;
-            padding: 0 20px;
-            max-width: 1500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .main-content {
-            display: flex;
-            gap: 20px;
-            width: 100%;
-            justify-content: center;
-        }
-
-        .column {
-            min-width: 0;
-        }
-
-        .network-visualization {
-            flex: 0 0 300px;
-            background: #000;
-        }
-
-        .game-canvas {
-            flex: 0 0 600px;
-        }
-
-        .stats-container {
-            flex: 0 0 300px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: #000;
-            color: #33ff33;
-        }
-
-        .token-monitor {
-            width: 100%;
-        }
-
-        .hash-monitor {
-            background: #000;
-            border: 1px solid #33ff33;
             padding: 10px;
             height: 300px;
             display: flex;
@@ -162,46 +15,75 @@
             box-sizing: border-box;
         }
 
-        .token-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .controls-row {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .input-group {
-            flex: 1;
-            display: flex;
-            gap: 10px;
-        }
-
         .input-group input[type="text"] {
-            flex: 1;
+            background: #000;
+            border: none;
+            border-bottom: 1px solid #33ff33;
+            color: #33ff33;
+            padding: 5px;
+            width: 200px;
+            margin-right: 5px;
+            font-family: 'Source Code Pro', monospace;
         }
 
-        .hash-list {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 10px;
-            overflow-y: auto;
-            padding: 5px;
+        .hash-monitor button {
+            background: #000;
+            border: 1px solid #33ff33;
+            color: #33ff33;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: 'Source Code Pro', monospace;
         }
 
         .hash-item {
-            border: 1px dashed #33ff33;
             padding: 8px;
             font-size: 11px;
-            background: rgba(51, 255, 51, 0.05);
+            border-left: 2px solid #33ff33;
+            margin-bottom: 5px;
+            background: rgba(51, 255, 51, 0.02);
         }
 
+        .social-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #000;
+            color: #33ff33;
+            text-decoration: none;
+            font-family: 'Source Code Pro', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .social-button:hover {
+            background: rgba(51, 255, 51, 0.1);
+        }
+
+        .header {
+            color: #33ff33;
+            text-align: center;
+            font-family: 'Source Code Pro', monospace;
+            margin: 20px 0;
+        }
+
+        /* 移除状态面板的边框和装饰 */
+        .stats-box, .direction-stats, .neural-stats, .decision-analysis {
+            white-space: pre;
+            font-family: 'Source Code Pro', monospace;
+            background: #000;
+            padding: 10px;
+            font-size: 11px;
+            color: #33ff33;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* 移除多余的边框和装饰 */
+        .stats-container > div {
+            margin-bottom: 15px;
+        }
+
+        /* 只保留游戏画布的边框 */
         #gameCanvas {
             width: 100%;
             height: 600px;
@@ -209,81 +91,33 @@
             border: 1px solid #33ff33;
         }
 
-        .container {
-            max-width: 100%;
-            overflow-x: hidden;
-        }
-
-        .stats-box, .direction-stats, .neural-stats, .decision-analysis {
-            white-space: pre;
-            font-family: 'Source Code Pro', monospace;
-            background: #000;
-            padding: 10px;
-            font-size: 11px;
-            width: 100%;
-            box-sizing: border-box;
-            overflow-x: hidden;
-            min-width: 300px;
-            color: #33ff33;
-        }
-
-        .hash-item {
-            padding: 5px 0;
-            border-bottom: 1px dashed #33ff33;
-        }
-
-        .hash-item:last-child {
-            border-bottom: none;
-        }
-
+        /* 移除神经网络可视化的边框 */
         #networkCanvas {
             width: 100%;
             height: 600px;
             max-width: 300px;
         }
 
-        /* 确保所有内容都使用 border-box */
-        * {
-            box-sizing: border-box;
+        /* 调整自动刷新控件样式 */
+        .auto-refresh input[type="number"] {
+            background: #000;
+            border: none;
+            border-bottom: 1px solid #33ff33;
+            color: #33ff33;
+            width: 50px;
+            padding: 2px;
+            font-family: 'Source Code Pro', monospace;
         }
 
-        /* 调整状态面板中的文字对齐和宽度 */
-        .stats-box span, .direction-stats span, .neural-stats span, .decision-analysis span {
-            display: inline-block;
-            min-width: 60px;
-            text-align: right;
-            margin-left: 5px;
+        /* 调整复选框样式 */
+        .auto-refresh input[type="checkbox"] {
+            accent-color: #33ff33;
         }
 
-        /* 修改状态面板的内容结构 */
-        .stats-box {
-            content: none;
-        }
-
-        /* 修改状态面板的内容 */
-        .stats-container {
-            flex: 0 0 300px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        /* 确保所有文本颜色统一 */
+        body {
             background: #000;
             color: #33ff33;
-        }
-
-        /* 确保所有文本都是绿色 */
-        .stats-container, .stats-container * {
-            color: #33ff33;
-        }
-
-        /* 调整面板间距 */
-        .stats-container > div {
-            margin-bottom: 15px;
-        }
-
-        /* 确保文本不会被截断 */
-        .stats-container > div {
-            width: 100%;
-            overflow: visible;
         }
     </style>
 </head>

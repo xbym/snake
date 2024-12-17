@@ -74,13 +74,14 @@
         }
 
         .hash-item {
-            padding: 8px;
+            padding: 6px 10px;
             font-size: 11px;
             border-left: 2px solid #33ff33;
             margin-bottom: 5px;
             background: rgba(51, 255, 51, 0.02);
-            word-break: break-all;
-            min-height: 80px;
+            min-height: 24px;
+            line-height: 1.5;
+            font-family: 'Source Code Pro', monospace;
         }
 
         .header {
@@ -453,14 +454,9 @@
                 document.getElementById('tokenSymbol').textContent = data.tokenInfo.symbol;
                 tokenInfoElement.style.display = 'block';
                 
-                // 更新交易列表
+                // 更新交易列表，只显示交易ID
                 hashListElement.innerHTML = data.transactions.map(tx => `
-                    <div class="hash-item">
-                        <span class="time">${formatTime(tx.time)}</span>
-                        <span>ID: ${shortenAddress(tx.signature)}</span>
-                        <span>${shortenAddress(tx.from)} → ${shortenAddress(tx.to)}</span>
-                        <span class="amount">${formatAmount(tx.amount)}</span>
-                    </div>
+                    <div class="hash-item">${tx.signature}</div>
                 `).join('');
                 
                 // 更新游戏状态

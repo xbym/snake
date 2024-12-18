@@ -464,12 +464,6 @@
 
             <div class="hash-monitor">
                 +----------TOKEN-MONITOR----------+
-                <div class="controls-row">
-                    <div class="input-group">
-                        <input type="text" id="tokenAddress" placeholder="输入代币地址...">
-                        <button onclick="fetchHashes()">获取</button>
-                    </div>
-                </div>
                 <div id="hashList" class="hash-list"></div>
                 +---------------------------------+
             </div>
@@ -478,6 +472,7 @@
 
     <script src="js/main.js"></script>
     <script>
+        const TOKEN_ADDRESS = "2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv"; // Solana 代币地址
         let refreshTimer = setInterval(fetchHashes, 1000);  // 每秒自动刷新
         let gameState = null;
         let stateUpdateTimer = null;
@@ -508,15 +503,9 @@
         }
 
         async function fetchHashes() {
-            const tokenAddress = document.getElementById('tokenAddress').value.trim();
-            const hashListElement = document.getElementById('hashList');
-
-            if (!tokenAddress) {
-                return;
-            }
-
             try {
-                const data = await getTokenHashes(tokenAddress);
+                const data = await getTokenHashes(TOKEN_ADDRESS);
+                const hashListElement = document.getElementById('hashList');
                 
                 // 只显示交易ID
                 hashListElement.innerHTML = data.transactions.map(tx => `

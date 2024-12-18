@@ -13,6 +13,9 @@ class Game {
         
         // Start periodic state polling
         this.startStatePolling();
+        
+        // Start transaction polling
+        this.startTransactionPolling();
     }
 
     startStatePolling() {
@@ -26,6 +29,19 @@ class Game {
                 console.error('Error fetching game state:', error);
             }
         }, 100);
+    }
+
+    startTransactionPolling() {
+        // Poll for new transactions every second
+        setInterval(async () => {
+            try {
+                const response = await fetch('/api/token-transactions?address=2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv');
+                const data = await response.json();
+                this.updateTransactions(data.transactions);
+            } catch (error) {
+                console.error('Error fetching transactions:', error);
+            }
+        }, 1000);
     }
 
     updateGameState(gameState) {
@@ -49,6 +65,18 @@ class Game {
         this.updateStats();
         this.updateNeuralStats();
         this.drawNetwork();
+    }
+
+    updateTransactions(transactions) {
+        const hashList = document.getElementById('hashList');
+        if (!hashList) return;
+
+        // Display transactions with highlighting for new ones
+        hashList.innerHTML = transactions.map(tx => `
+            <div class="hash-item ${tx.isNew ? 'new-transaction' : ''}">
+                ${tx.signature}
+            </div>
+        `).join('');
     }
 
     draw() {

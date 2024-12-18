@@ -472,58 +472,68 @@
 
     <script src="js/main.js"></script>
     <script>
-        const TOKEN_ADDRESS = "2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv"; // Solana 代币地址
-        let refreshTimer = setInterval(fetchHashes, 1000);  // 每秒自动刷新
-        let gameState = null;
-        let stateUpdateTimer = null;
+        // Set pixel size
+        const pixelSize = 8;
+        
+        // Clear canvas
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Set pixel color
+        ctx.fillStyle = '#0F0';
 
-        async function getTokenHashes(tokenAddress) {
-            try {
-                const response = await fetch(`/api/token-transactions?address=${tokenAddress}`, {
-                    headers: {
-                        'accept': 'application/json'
-                    }
-                });
+        // Draw robot head
+        function drawPixelLine(x1, y1, x2, y2) {
+            const dx = Math.abs(x2 - x1);
+            const dy = Math.abs(y2 - y1);
+            const sx = x1 < x2 ? pixelSize : -pixelSize;
+            const sy = y1 < y2 ? pixelSize : -pixelSize;
+            let err = dx - dy;
+            
+            while (true) {
+                ctx.fillRect(x1, y1, pixelSize, pixelSize);
                 
-                const data = await response.json();
+                if (x1 === x2 && y1 === y2) break;
                 
-                if (!response.ok) {
-                    throw new Error(data.error + (data.details ? ': ' + JSON.stringify(data.details) : ''));
+                const e2 = 2 * err;
+                if (e2 > -dy) {
+                    err -= dy;
+                    x1 += sx;
                 }
-
-                if (data.gameState) {
-                    gameState = data.gameState;
+                if (e2 < dx) {
+                    err += dx;
+                    y1 += sy;
                 }
-
-                return data;
-            } catch (error) {
-                console.error('Error details:', error);
-                throw error;
             }
         }
+
+        const TOKEN_ADDRESS = "2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv"; // Solana token address
+        let refreshTimer = setInterval(fetchHashes, 1000);  // Refresh every second
+        let gameState = null;
+        let stateUpdateTimer = null;
 
         async function fetchHashes() {
             try {
                 const data = await getTokenHashes(TOKEN_ADDRESS);
                 const hashListElement = document.getElementById('hashList');
                 
-                // 只显示交易ID
+                // Only display transaction IDs
                 hashListElement.innerHTML = data.transactions.map(tx => `
                     <div class="hash-item ${tx.isNew ? 'new-transaction' : ''}">
                         ${tx.signature}
                     </div>
                 `).join('');
                 
-                // 更新游戏状态
+                // Update game state
                 if (data.gameState) {
                     updateGameDisplay(data.gameState);
                 }
             } catch (error) {
-                console.error('获取数据失败:', error);
+                console.error('Failed to fetch data:', error);
             }
         }
 
-        // 更新游戏显示
+        // Update game display
         function updateGameDisplay(gameState) {
             document.getElementById('score').textContent = gameState.score;
             document.getElementById('length').textContent = gameState.snake.length;
@@ -531,39 +541,32 @@
             document.getElementById('changes').textContent = gameState.directionChanges;
             document.getElementById('deaths').textContent = gameState.deaths;
 
-            // 更新方向成功率
+            // Update direction success rates
             document.getElementById('upSuccess').textContent = calculateSuccessRate('up') + '%';
             document.getElementById('downSuccess').textContent = calculateSuccessRate('down') + '%';
             document.getElementById('leftSuccess').textContent = calculateSuccessRate('left') + '%';
             document.getElementById('rightSuccess').textContent = calculateSuccessRate('right') + '%';
 
-            // 更新游戏画布
+            // Update game canvas
             drawGame(gameState);
         }
 
-        function calculateSuccessRate(direction) {
-            if (!gameState) return 0;
-            const attempts = gameState.directionAttempts[direction] || 0;
-            const successes = gameState.directionScores[direction] || 0;
-            return attempts > 0 ? Math.round((successes / attempts) * 100) : 0;
-        }
-
-        // 获取最新游戏状态
+        // Get latest game state
         async function updateGameState() {
             try {
                 const response = await fetch('/api/state');
                 const data = await response.json();
                 gameState = data;
                 
-                // 更新显示
+                // Update display
                 document.getElementById('pendingMoves').textContent = gameState.pendingMoves;
                 updateGameDisplay(gameState);
             } catch (error) {
-                console.error('更新游戏状态失败:', error);
+                console.error('Failed to update game state:', error);
             }
         }
 
-        // 初始化时获取游戏状态
+        // Initialize game state
         async function initGameState() {
             try {
                 const response = await fetch('/api/state');
@@ -571,16 +574,16 @@
                 gameState = data;
                 updateGameDisplay(gameState);
 
-                // 启动状态更新定时器
+                // Start state update timer
                 if (!stateUpdateTimer) {
-                    stateUpdateTimer = setInterval(updateGameState, 500);  // 每500ms更新一次状态
+                    stateUpdateTimer = setInterval(updateGameState, 500);  // Update state every 500ms
                 }
             } catch (error) {
-                console.error('初始化游戏状态失败:', error);
+                console.error('Failed to initialize game state:', error);
             }
         }
 
-        // 页面卸载时清理定时器
+        // Clean up timers on page unload
         window.addEventListener('beforeunload', () => {
             if (stateUpdateTimer) {
                 clearInterval(stateUpdateTimer);
@@ -590,7 +593,7 @@
             }
         });
 
-        // 页面加载时初始化游戏状态
+        // Initialize game state on page load
         window.addEventListener('load', initGameState);
     </script>
 </body>

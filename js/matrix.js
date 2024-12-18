@@ -22,7 +22,7 @@ class Matrix {
 
     static multiply(a, b) {
         if (a.cols !== b.rows) {
-            console.error('列和行数不匹配');
+            console.error('Columns and rows do not match');
             return undefined;
         }
         let result = new Matrix(a.rows, b.cols);

@@ -12,13 +12,13 @@ class GeneticAlgorithm {
     }
 
     selection() {
-        // 实现自然选择
+        // Implement natural selection
         this.population.sort((a, b) => b.fitness - a.fitness);
         this.population = this.population.slice(0, this.populationSize / 2);
     }
 
     crossover() {
-        // 实现交叉繁殖
+        // Implement crossover breeding
         const newPopulation = [];
         for (let i = 0; i < this.populationSize; i++) {
             const parentA = this.population[Math.floor(Math.random() * this.population.length)];
@@ -31,7 +31,7 @@ class GeneticAlgorithm {
     crossoverParents(parentA, parentB) {
         let child = new NeuralNetwork(24, 16, 4);
         
-        // 交叉权重
+        // Cross weights
         for (let i = 0; i < parentA.weightsIH.rows; i++) {
             for (let j = 0; j < parentA.weightsIH.cols; j++) {
                 child.weightsIH.data[i][j] = Math.random() < 0.5 ? 
@@ -40,7 +40,7 @@ class GeneticAlgorithm {
             }
         }
 
-        // 添加变异
+        // Add mutation
         this.mutate(child);
         return child;
     }

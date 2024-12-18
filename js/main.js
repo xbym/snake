@@ -7,16 +7,16 @@ class Game {
         this.snake = null;
         this.gridSize = 20;
         
-        // 初始化神经网络可视化
+        // Initialize neural network visualization
         this.networkCanvas = document.getElementById('networkCanvas');
         this.networkCtx = this.networkCanvas.getContext('2d');
         
-        // 开始定期获取状态
+        // Start periodic state polling
         this.startStatePolling();
     }
 
     startStatePolling() {
-        // 每100ms获取一次状态
+        // Get state every 100ms
         setInterval(async () => {
             try {
                 const response = await fetch('/api/state');
@@ -29,7 +29,7 @@ class Game {
     }
 
     updateGameState(gameState) {
-        // 更新游戏状态
+        // Update game state
         this.snake = {
             snake: gameState.snake,
             foods: gameState.foods,
@@ -37,14 +37,14 @@ class Game {
             score: gameState.score
         };
         
-        // 更新统计数据
+        // Update statistics
         this.directionScores = gameState.directionScores;
         this.directionAttempts = gameState.directionAttempts;
         this.startTime = gameState.startTime;
         this.directionChanges = gameState.directionChanges;
         this.lastChangeTime = gameState.lastChangeTime;
 
-        // 绘制游戏状态
+        // Draw game state
         this.draw();
         this.updateStats();
         this.updateNeuralStats();
@@ -55,7 +55,7 @@ class Game {
         const ctx = this.canvas.getContext('2d');
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // 绘制食物
+        // Draw food
         ctx.fillStyle = '#ff0000';
         this.snake.foods.forEach(food => {
             ctx.fillRect(
@@ -66,7 +66,7 @@ class Game {
             );
         });
 
-        // 绘制蛇
+        // Draw snake
         ctx.fillStyle = '#33ff33';
         this.snake.snake.forEach((segment, i) => {
             ctx.fillRect(
@@ -79,20 +79,20 @@ class Game {
     }
 
     updateStats() {
-        // 基础统计
+        // Basic statistics
         document.getElementById('score').textContent = this.snake.score;
         document.getElementById('length').textContent = this.snake.snake.length;
         
-        // 存活时间
+        // Survival time
         if (this.startTime) {
             const aliveTime = Math.floor((Date.now() - this.startTime) / 1000);
             document.getElementById('timeAlive').textContent = aliveTime;
         }
         
-        // 方向改变次数
+        // Direction change count
         document.getElementById('changes').textContent = this.directionChanges;
         
-        // 方向成功率
+        // Direction success rates
         ['up', 'right', 'down', 'left'].forEach(dir => {
             const attempts = this.directionAttempts[dir] || 1;
             const successes = this.directionScores[dir] || 0;
@@ -102,7 +102,7 @@ class Game {
     }
 
     updateNeuralStats() {
-        // 模拟神经网络数据
+        // Simulate neural network data
         const neuralMetrics = {
             entropy: (Math.sin(Date.now() / 1000) + 1) / 2,
             learningRate: 0.01 + Math.sin(Date.now() / 5000) * 0.005,
@@ -114,7 +114,7 @@ class Game {
             confidence: Math.min(100, this.snake.score * 10)
         };
 
-        // 更新显示
+        // Update display
         document.getElementById('entropy').textContent = neuralMetrics.entropy.toFixed(3);
         document.getElementById('learningRate').textContent = neuralMetrics.learningRate.toFixed(2);
         document.getElementById('mutationRate').textContent = '0.05';
@@ -133,10 +133,10 @@ class Game {
         const ctx = this.networkCtx;
         ctx.clearRect(0, 0, this.networkCanvas.width, this.networkCanvas.height);
 
-        // 绘制连接线
+        // Draw connections
         ctx.lineWidth = 0.5;
         
-        // 定义节点位置
+        // Define node positions
         const nodes = {
             input: Array(24).fill(0).map((_, i) => ({
                 x: 50,
@@ -152,7 +152,7 @@ class Game {
             }))
         };
 
-        // 绘制连接
+        // Draw connections
         nodes.input.forEach(input => {
             nodes.hidden.forEach(hidden => {
                 ctx.beginPath();
@@ -175,10 +175,10 @@ class Game {
             });
         });
 
-        // 绘制节点
+        // Draw nodes
         ctx.globalAlpha = 1;
         
-        // 输入节点
+        // Input nodes
         nodes.input.forEach((node, i) => {
             ctx.beginPath();
             ctx.fillStyle = i % 3 === 0 ? '#33ff33' : '#ffffff';
@@ -186,7 +186,7 @@ class Game {
             ctx.fill();
         });
 
-        // 隐藏节点
+        // Hidden nodes
         nodes.hidden.forEach(node => {
             ctx.beginPath();
             ctx.fillStyle = '#ffffff';
@@ -194,21 +194,21 @@ class Game {
             ctx.fill();
         });
 
-        // 输出节点
+        // Output nodes
         ctx.fillStyle = '#ffffff';
         nodes.output.forEach((node, i) => {
             ctx.beginPath();
             ctx.arc(node.x, node.y, 5, 0, Math.PI * 2);
             ctx.fill();
             
-            // 添加标签
+            // Add labels
             ctx.fillStyle = '#33ff33';
             ctx.font = '12px monospace';
             const labels = ['UP', 'DOWN', 'LEFT', 'RIGHT'];
             ctx.fillText(labels[i], node.x + 10, node.y + 5);
         });
 
-        // 添加其他信息
+        // Add other information
         ctx.fillStyle = '#33ff33';
         ctx.font = '12px monospace';
         ctx.fillText(`GEN: ${Math.floor(Date.now() / 5000)}`, 20, 20);
@@ -216,5 +216,5 @@ class Game {
     }
 }
 
-// 初始化游戏
+// Initialize game
 const game = new Game();

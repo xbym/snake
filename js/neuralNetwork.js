@@ -13,18 +13,18 @@ class NeuralNetwork {
     }
 
     predict(inputArray) {
-        // 将输入数组转换为矩阵
+        // Convert input array to matrix
         let inputs = Matrix.fromArray(inputArray);
         
-        // 计算隐藏层
+        // Calculate hidden layer
         let hidden = Matrix.multiply(this.weightsIH, inputs);
         hidden = Matrix.map(hidden, x => this.sigmoid(x));
         
-        // 计算输出层
+        // Calculate output layer
         let output = Matrix.multiply(this.weightsHO, hidden);
         output = Matrix.map(output, x => this.sigmoid(x));
         
-        // 转换回数组
+        // Convert back to array
         return output.toArray();
     }
 
@@ -40,11 +40,11 @@ class NeuralNetwork {
     }
 
     setPreTrainedWeights() {
-        // 简化的预训练权重
+        // Simplified pre-trained weights
         const weightsIH = [];
         const weightsHO = [];
 
-        // 初始化隐藏层权重
+        // Initialize hidden layer weights
         for (let i = 0; i < this.hiddenNodes; i++) {
             weightsIH[i] = [];
             for (let j = 0; j < this.inputNodes; j++) {
@@ -52,7 +52,7 @@ class NeuralNetwork {
             }
         }
 
-        // 初始化输出层权重
+        // Initialize output layer weights
         for (let i = 0; i < this.outputNodes; i++) {
             weightsHO[i] = [];
             for (let j = 0; j < this.hiddenNodes; j++) {

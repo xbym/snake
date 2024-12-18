@@ -4,17 +4,17 @@ class Snake {
         this.ctx = canvas.getContext('2d');
         this.gridSize = 20;
         
-        // 设置初始位置在画布中间
+        // Set initial position at the center of canvas
         const startX = Math.floor(canvas.width / (2 * this.gridSize));
         const startY = Math.floor(canvas.height / (2 * this.gridSize));
         
-        // 初始化蛇的身体
+        // Initialize snake body
         this.snake = [{x: startX, y: startY}];
-        // 初始方向向右
+        // Initial direction is right
         this.direction = {x: 1, y: 0};
-        this.foods = [{x: 10, y: 10}];  // 改为食物数组
-        this.lastFoodTime = Date.now();  // 记录上次添加食物的时间
-        this.FOOD_ADD_INTERVAL = 15000;  // 15秒
+        this.foods = [{x: 10, y: 10}];  // Changed to food array
+        this.lastFoodTime = Date.now();  // Record last food addition time
+        this.FOOD_ADD_INTERVAL = 15000;  // 15 seconds
         this.score = 0;
     }
 
@@ -27,19 +27,19 @@ class Snake {
             };
         } while (
             this.snake.some(segment => segment.x === food.x && segment.y === food.y) ||
-            this.foods.some(f => f.x === food.x && f.y === food.y)  // 确保新食物不会与现有食物重叠
+            this.foods.some(f => f.x === food.x && f.y === food.y)  // Ensure new food doesn't overlap with existing food
         );
         return food;
     }
 
     update() {
-        // 更新蛇的位置
+        // Update snake position
         const head = {
             x: this.snake[0].x + this.direction.x,
             y: this.snake[0].y + this.direction.y
         };
 
-        // 穿墙处理
+        // Wall passing logic
         const gridWidth = this.canvas.width / this.gridSize;
         const gridHeight = this.canvas.height / this.gridSize;
 
@@ -50,40 +50,40 @@ class Snake {
 
         this.snake.unshift(head);
 
-        // 检查是否吃到任何食物
+        // Check if any food is eaten
         let foodEaten = false;
         this.foods = this.foods.filter(food => {
             if (head.x === food.x && head.y === food.y) {
                 foodEaten = true;
                 this.score += 1;
-                return false;  // 移除被吃掉的食物
+                return false;  // Remove eaten food
             }
-            return true;  // 保留未被吃掉的食物
+            return true;  // Keep uneaten food
         });
 
-        // 如果吃到食物，不移除尾部（蛇变长）
+        // If food is eaten, don't remove tail (snake grows)
         if (!foodEaten) {
             this.snake.pop();
         }
 
-        // 在蛇长度小于10时，每15秒添加一个新食物
+        // Add new food every 15 seconds when snake length is less than 10
         const now = Date.now();
         if (this.snake.length < 10 && now - this.lastFoodTime >= this.FOOD_ADD_INTERVAL) {
             this.foods.push(this.generateFood());
             this.lastFoodTime = now;
         }
 
-        // 确保至少有一个食物
+        // Ensure at least one food exists
         if (this.foods.length === 0) {
             this.foods.push(this.generateFood());
         }
     }
 
     draw() {
-        // 清空画布
+        // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // 绘制网格（可选）
+        // Draw grid (optional)
         this.ctx.strokeStyle = '#eee';
         for (let i = 0; i < this.canvas.width; i += this.gridSize) {
             this.ctx.beginPath();
@@ -98,7 +98,7 @@ class Snake {
             this.ctx.stroke();
         }
         
-        // 绘制蛇
+        // Draw snake
         this.ctx.fillStyle = 'green';
         this.snake.forEach((segment, index) => {
             this.ctx.fillRect(
@@ -108,7 +108,7 @@ class Snake {
                 this.gridSize - 2
             );
             
-            // 绘制蛇头
+            // Draw snake head
             if (index === 0) {
                 this.ctx.fillStyle = 'darkgreen';
                 this.ctx.fillRect(
@@ -120,7 +120,7 @@ class Snake {
             }
         });
 
-        // 绘制所有食物
+        // Draw all food
         this.ctx.fillStyle = 'red';
         this.foods.forEach(food => {
             this.ctx.fillRect(
@@ -132,22 +132,22 @@ class Snake {
         });
     }
 
-    // 添加视觉感知方法
+    // Add visual perception method
     vision() {
         let inputs = [];
-        // 8个方向的视觉输入
+        // Visual inputs for 8 directions
         const directions = [
-            {x: 0, y: -1},  // 上
-            {x: 1, y: -1},  // 右上
-            {x: 1, y: 0},   // 右
-            {x: 1, y: 1},   // 右下
-            {x: 0, y: 1},   // 下
-            {x: -1, y: 1},  // 左下
-            {x: -1, y: 0},  // 左
-            {x: -1, y: -1}  // 左上
+            {x: 0, y: -1},  // Up
+            {x: 1, y: -1},  // Up-Right
+            {x: 1, y: 0},   // Right
+            {x: 1, y: 1},   // Down-Right
+            {x: 0, y: 1},   // Down
+            {x: -1, y: 1},  // Down-Left
+            {x: -1, y: 0},  // Left
+            {x: -1, y: -1}  // Up-Left
         ];
 
-        // 对每个方向检测三种情况：墙壁、食物、自身
+        // Check three conditions for each direction: wall, food, self
         directions.forEach(dir => {
             inputs.push(this.lookInDirection(dir, 'wall'));
             inputs.push(this.lookInDirection(dir, 'food'));
@@ -166,19 +166,19 @@ class Snake {
             pos.y += direction.y;
             distance++;
 
-            // 检查是否撞墙
+            // Check for wall collision
             if (pos.x < 0 || pos.x >= this.canvas.width/this.gridSize || 
                 pos.y < 0 || pos.y >= this.canvas.height/this.gridSize) {
                 if (type === 'wall') return 1/distance;
                 break;
             }
 
-            // 检查是否找到食物
+            // Check for food
             if (type === 'food' && pos.x === this.food.x && pos.y === this.food.y) {
                 return 1/distance;
             }
 
-            // 检查是否碰到自己
+            // Check for self collision
             if (type === 'self' && this.snake.some(s => s.x === pos.x && s.y === pos.y)) {
                 return 1/distance;
             }
@@ -189,13 +189,13 @@ class Snake {
     isDead() {
         const head = this.snake[0];
         
-        // 撞墙检测
+        // Wall collision detection
         if (head.x < 0 || head.x >= this.canvas.width/this.gridSize || 
             head.y < 0 || head.y >= this.canvas.height/this.gridSize) {
             return true;
         }
         
-        // 撞自己检测
+        // Self collision detection
         for (let i = 1; i < this.snake.length; i++) {
             if (head.x === this.snake[i].x && head.y === this.snake[i].y) {
                 return true;
@@ -206,7 +206,7 @@ class Snake {
     }
 
     setDirection(direction) {
-        // 防止蛇反向移动
+        // Prevent snake from moving in opposite direction
         const opposites = {
             'up': 'down',
             'down': 'up',
@@ -214,14 +214,14 @@ class Snake {
             'right': 'left'
         };
 
-        // 获取当前方向
+        // Get current direction
         let currentDirection = '';
         if (this.direction.x === 1) currentDirection = 'right';
         if (this.direction.x === -1) currentDirection = 'left';
         if (this.direction.y === 1) currentDirection = 'down';
         if (this.direction.y === -1) currentDirection = 'up';
 
-        // 如果是相反方向，则忽略
+        // Ignore if opposite direction
         if (opposites[direction] === currentDirection) {
             return;
         }

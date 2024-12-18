@@ -6,9 +6,9 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// 蛇的游戏状态
+// Snake game state
 let gameState = {
-    snake: [{x: 20, y: 15}], // 初始位置
+    snake: [{x: 20, y: 15}], // Initial position
     foods: [{x: 10, y: 10}],
     direction: {x: 1, y: 0},
     score: 0,
@@ -27,36 +27,36 @@ let gameState = {
     directionChanges: 0,
     lastChangeTime: Date.now(),
     startTime: Date.now(),
-    lastFoodTime: Date.now(),  // 上次添加食物的时间
+    lastFoodTime: Date.now(),  // Last time food was added
     gridSize: 20,
     boardWidth: 40,  // 800/20
     boardHeight: 30,  // 600/20
-    lastMoveTime: Date.now(),  // 上次移动时间
-    pendingMoves: 0,  // 待处理的移动次数
-    maxMovesPerSecond: 1,  // 每秒最多1格
-    deaths: 0,  // 添加死亡计数
-    maxFoods: 3,  // 修改最大食物数量为3
-    foodInterval: 30000  // 食物生成间隔（30秒）
+    lastMoveTime: Date.now(),  // Last move time
+    pendingMoves: 0,  // Number of pending moves
+    maxMovesPerSecond: 1,  // Maximum 1 move per second
+    deaths: 0,  // Death counter
+    maxFoods: 3,  // Maximum 3 foods on board
+    foodInterval: 30000  // Food generation interval (30 seconds)
 };
 
-// 存储已知的交易ID
+// Store known transaction IDs
 let knownTransactions = new Set();
 
-// 游戏逻辑
+// Game logic
 function updateGame() {
     const now = Date.now();
     const timeSinceLastMove = now - gameState.lastMoveTime;
     
-    // 检查是否需要生成新食物
+    // Check if need to generate new food
     if (gameState.foods.length === 0) {
-        // 如果没有食物，立即生成一个
+        // If no food, generate one immediately
         const newFood = generateNewFood();
         if (newFood) {
             gameState.foods.push(newFood);
         }
         gameState.lastFoodTime = now;
     } else if (now - gameState.lastFoodTime >= gameState.foodInterval && gameState.foods.length < gameState.maxFoods) {
-        // 每30秒尝试生成一个新食物
+        // Try to generate new food every 30 seconds
         const newFood = generateNewFood();
         if (newFood) {
             gameState.foods.push(newFood);
@@ -64,26 +64,26 @@ function updateGame() {
         gameState.lastFoodTime = now;
     }
 
-    // 检查是否可以移动
+    // Check if can move
     if (timeSinceLastMove >= (1000 / gameState.maxMovesPerSecond) && gameState.pendingMoves > 0) {
-        // 移动蛇
+        // Move snake
         const newHead = {
             x: gameState.snake[0].x + gameState.direction.x,
             y: gameState.snake[0].y + gameState.direction.y
         };
 
-        // 穿墙
+        // Wall passing
         newHead.x = (newHead.x + gameState.boardWidth) % gameState.boardWidth;
         newHead.y = (newHead.y + gameState.boardHeight) % gameState.boardHeight;
 
-        // 检查自身碰撞
+        // Check self collision
         if (checkCollision(newHead)) {
             resetSnake();
-            gameState.pendingMoves = Math.max(0, gameState.pendingMoves - 1);  // 确保碰撞也消耗一次移动
+            gameState.pendingMoves = Math.max(0, gameState.pendingMoves - 1);  // Ensure collision consumes a move
             return true;
         }
 
-        // 检查是否吃到食物
+        // Check if food eaten
         const foodIndex = gameState.foods.findIndex(food => 
             food.x === newHead.x && food.y === newHead.y
         );
@@ -108,7 +108,7 @@ function updateGame() {
 
         gameState.snake.unshift(newHead);
         gameState.lastMoveTime = now;
-        gameState.pendingMoves = Math.max(0, gameState.pendingMoves - 1);  // 使用Math.max确保不会出现负数
+        gameState.pendingMoves = Math.max(0, gameState.pendingMoves - 1);  // Use Math.max to prevent negative values
 
         if (now - gameState.lastChangeTime >= 5000) {
             changeDirection();
@@ -121,7 +121,7 @@ function updateGame() {
     return false;
 }
 
-// 获取方向名称
+// Get direction name
 function getDirName(dir) {
     if (dir.x === 1) return 'right';
     if (dir.x === -1) return 'left';
@@ -129,16 +129,16 @@ function getDirName(dir) {
     if (dir.y === -1) return 'up';
 }
 
-// 改变方向
+// Change direction
 function changeDirection() {
     const possibleDirs = [
-        {x: 1, y: 0},   // 右
-        {x: -1, y: 0},  // 左
-        {x: 0, y: 1},   // 下
-        {x: 0, y: -1}   // 上
+        {x: 1, y: 0},   // right
+        {x: -1, y: 0},  // left
+        {x: 0, y: 1},   // down
+        {x: 0, y: -1}   // up
     ];
 
-    // 随机选择一个新方向（排除当前方向）
+    // Randomly select new direction (excluding current direction)
     const currentDir = gameState.direction;
     const newDirs = possibleDirs.filter(dir => 
         !(dir.x === currentDir.x && dir.y === currentDir.y)
@@ -152,25 +152,25 @@ function changeDirection() {
 }
 
 function resetSnake() {
-    // 保持方向权重和分数不变
+    // Keep direction weights and score unchanged
     const savedDirectionScores = {...gameState.directionScores};
     const savedDirectionAttempts = {...gameState.directionAttempts};
     const savedScore = gameState.score;
     const savedDeaths = gameState.deaths;
     
-    // 重置蛇的位置和长度
+    // Reset snake position and length
     gameState.snake = [{x: 20, y: 15}];
     gameState.direction = {x: 1, y: 0};
     gameState.directionChanges = 0;
     gameState.lastChangeTime = Date.now();
     gameState.deaths = savedDeaths + 1;
     
-    // 恢复保存的数据
+    // Restore saved data
     gameState.directionScores = savedDirectionScores;
     gameState.directionAttempts = savedDirectionAttempts;
     gameState.score = savedScore;
     
-    // 重置时确保至少有一个食物
+    // Ensure at least one food on reset
     if (gameState.foods.length === 0) {
         const newFood = generateNewFood();
         if (newFood) {
@@ -181,16 +181,16 @@ function resetSnake() {
 }
 
 function checkCollision(head) {
-    // 检查是否与自身碰撞（从第二个身体段开始检查）
+    // Check self collision (starting from second body segment)
     return gameState.snake.slice(1).some(segment => 
         segment.x === head.x && segment.y === head.y
     );
 }
 
-// 生成新食物的函数
+// Generate new food function
 function generateNewFood() {
     if (gameState.foods.length >= gameState.maxFoods) {
-        return null;  // 如果已达到最大食物数量，不生成新食物
+        return null;  // If maximum food count reached, don't generate new food
     }
 
     let newFood;
@@ -208,25 +208,25 @@ function generateNewFood() {
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.')); // 服务静态文件
+app.use(express.static('.')); // Serve static files
 
-// 获取游戏状态
+// Get game state
 app.get('/api/state', (req, res) => {
     res.json(gameState);
 });
 
-// 添加手动更新函数
+// Add manual update function
 app.post('/api/update-game', (req, res) => {
     updateGame();
     res.json(gameState);
 });
 
-// 修改代币交易API，使其在获取新交易时触发游戏更新
+// Modify token transaction API to trigger game update when new transactions are received
 app.get('/api/token-transactions', async (req, res) => {
     try {
         const { address } = req.query;
         if (!address) {
-            return res.status(400).json({ error: '需要提供代币地址' });
+            return res.status(400).json({ error: 'Token address is required' });
         }
 
         const response = await axios.get(`https://pro-api.solscan.io/v2.0/token/transfer`, {
@@ -245,7 +245,7 @@ app.get('/api/token-transactions', async (req, res) => {
         });
         
         if (!response.data || !response.data.success) {
-            return res.status(500).json({ error: 'Solscan API 返回了无效的响应' });
+            return res.status(500).json({ error: 'Invalid response from Solscan API' });
         }
 
         const transactions = response.data.data.map(tx => ({
@@ -257,18 +257,18 @@ app.get('/api/token-transactions', async (req, res) => {
             isNew: !knownTransactions.has(tx.trans_id)
         }));
 
-        // 找出新交易
+        // Find new transactions
         const newTransactions = transactions.filter(tx => !knownTransactions.has(tx.signature));
         
-        // 更新已知交易集合
+        // Update known transactions set
         newTransactions.forEach(tx => knownTransactions.add(tx.signature));
 
-        // 为每个新交易添加一个待处理的移动
+        // Add a pending move for each new transaction
         if (newTransactions.length > 0) {
             gameState.pendingMoves += newTransactions.length;
         }
         
-        // 尝试更新游戏状态
+        // Try to update game state
         updateGame();
         
         res.json({ 
@@ -283,10 +283,10 @@ app.get('/api/token-transactions', async (req, res) => {
             gameState
         });
     } catch (error) {
-        console.error('错误详情:', error);
+        console.error('Error details:', error);
         res.status(500).json({ 
-            error: '获取代币交易失败',
-            details: error.response?.data?.message || '请确保已设置正确的 SOLSCAN_API_KEY 环境变量'
+            error: 'Failed to get token transactions',
+            details: error.response?.data?.message || 'Please ensure SOLSCAN_API_KEY environment variable is set correctly'
         });
     }
 });
@@ -294,7 +294,7 @@ app.get('/api/token-transactions', async (req, res) => {
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
     
-    // 添加游戏循环，每50毫秒检查一次是否需要移动
+    // Add game loop to check for moves every 50ms
     setInterval(() => {
         if (gameState.pendingMoves > 0) {
             updateGame();

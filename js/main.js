@@ -16,6 +16,12 @@ class Game {
         
         // Start transaction polling
         this.startTransactionPolling();
+
+        // Set GitHub link
+        const githubButton = document.querySelector('.social-button.github');
+        if (githubButton) {
+            githubButton.href = 'https://github.com/xbym/snake';
+        }
     }
 
     startStatePolling() {

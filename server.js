@@ -32,7 +32,7 @@ let gameState = {
     boardWidth: 40,  // 800/20
     boardHeight: 30,  // 600/20
     lastMoveTime: Date.now(),  // Last move time
-    pendingMoves: 0,  // Number of pending moves
+    pendingMoves: 1,  // 初始设置为1，确保蛇开始就能移动
     maxMovesPerSecond: 2,  // 增加移动速度到每秒2次
     deaths: 0,  // Death counter
     maxFoods: 10,  // Maximum 10 foods on board
@@ -261,6 +261,10 @@ app.get('/api/token-transactions', async (req, res) => {
         // Add a pending move for each new transaction
         if (newTransactions.length > 0) {
             gameState.pendingMoves += newTransactions.length;
+            changeDirection(); // 每次有新交易时改变方向
+        } else if (gameState.pendingMoves === 0) {
+            // 如果没有待处理的移动，添加一个
+            gameState.pendingMoves = 1;
         }
         
         // Try to update game state
@@ -290,8 +294,10 @@ app.listen(port, () => {
     
     // 减少状态更新间隔，提高响应性
     setInterval(() => {
-        if (gameState.pendingMoves > 0) {
-            updateGame();
+        if (gameState.pendingMoves === 0) {
+            // 如果没有待处理的移动，添加一个
+            gameState.pendingMoves = 1;
         }
-    }, 20); // 从 50ms 改为 20ms
+        updateGame();
+    }, 500); // 调整为500ms，让移动更平滑
 }); 

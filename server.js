@@ -93,7 +93,6 @@ function updateGame() {
 
         if (foodIndex !== -1) {
             // 吃到食物时，保留尾部（自然增长）
-            console.log('Food eaten! Snake length:', gameState.snake.length);
             gameState.foods.splice(foodIndex, 1);
             gameState.score++;
             
@@ -112,7 +111,6 @@ function updateGame() {
             gameState.snake.pop();
         }
 
-        console.log('Final snake length:', gameState.snake.length);
         gameState.lastMoveTime = now;
         gameState.pendingMoves = Math.max(0, gameState.pendingMoves - 1);  // Use Math.max to prevent negative values
 
@@ -280,7 +278,6 @@ app.get('/api/token-transactions', async (req, res) => {
             gameState
         });
     } catch (error) {
-        console.error('Error details:', error);
         res.status(500).json({ 
             error: 'Failed to get token transactions',
             details: error.response?.data?.message || 'Please ensure SOLSCAN_API_KEY environment variable is set correctly'

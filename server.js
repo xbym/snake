@@ -6,6 +6,19 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+// 配置 CORS
+const corsOptions = {
+    origin: '*', // 允许所有来源
+    methods: ['GET', 'POST'], // 允许的 HTTP 方法
+    allowedHeaders: ['Content-Type', 'Authorization'], // 允许的请求头
+    credentials: true // 允许发送凭证
+};
+
+// 启用 CORS
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.static('.')); // Serve static files
+
 // Snake game state
 let gameState = {
     snake: [{x: 20, y: 15}], // Initial position

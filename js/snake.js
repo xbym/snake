@@ -14,8 +14,8 @@ class Snake {
         this.direction = {x: 1, y: 0};
         this.foods = [{x: 10, y: 10}];  // Changed to food array
         this.lastFoodTime = Date.now();  // Record last food addition time
-        this.FOOD_ADD_INTERVAL = 15000;  // 15 seconds
-        this.MAX_FOODS = 5;  // Maximum 5 foods on board
+        this.FOOD_ADD_INTERVAL = 30000;  // 30 seconds
+        this.MAX_FOODS = 10;  // Maximum 10 foods on board
         this.score = 0;
     }
 

@@ -33,10 +33,10 @@ let gameState = {
     boardHeight: 30,  // 600/20
     lastMoveTime: Date.now(),  // Last move time
     pendingMoves: 0,  // Number of pending moves
-    maxMovesPerSecond: 1,  // Maximum 1 move per second
+    maxMovesPerSecond: 2,  // 增加移动速度到每秒2次
     deaths: 0,  // Death counter
     maxFoods: 10,  // Maximum 10 foods on board
-    foodInterval: 30000  // Food generation interval (30 seconds)
+    foodInterval: 15000  // 减少食物生成间隔到15秒
 };
 
 // Store known transaction IDs
@@ -89,6 +89,7 @@ function updateGame() {
         );
 
         if (foodIndex !== -1) {
+            console.log('Food eaten! Snake length before:', gameState.snake.length);
             gameState.foods.splice(foodIndex, 1);
             gameState.score++;
             
@@ -102,11 +103,13 @@ function updateGame() {
 
             const currentDirName = getDirName(gameState.direction);
             gameState.directionScores[currentDirName] = (gameState.directionScores[currentDirName] || 0) + 1;
+            console.log('Snake length after eating:', gameState.snake.length);
         } else {
             gameState.snake.pop();
         }
 
         gameState.snake.unshift(newHead);
+        console.log('Final snake length:', gameState.snake.length);
         gameState.lastMoveTime = now;
         gameState.pendingMoves = Math.max(0, gameState.pendingMoves - 1);  // Use Math.max to prevent negative values
 

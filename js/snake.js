@@ -15,10 +15,15 @@ class Snake {
         this.foods = [{x: 10, y: 10}];  // Changed to food array
         this.lastFoodTime = Date.now();  // Record last food addition time
         this.FOOD_ADD_INTERVAL = 15000;  // 15 seconds
+        this.MAX_FOODS = 5;  // Maximum 5 foods on board
         this.score = 0;
     }
 
     generateFood() {
+        if (this.foods.length >= this.MAX_FOODS) {
+            return null;  // If maximum food count reached, don't generate new food
+        }
+
         let food;
         do {
             food = {

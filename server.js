@@ -35,7 +35,7 @@ let gameState = {
     pendingMoves: 0,  // Number of pending moves
     maxMovesPerSecond: 1,  // Maximum 1 move per second
     deaths: 0,  // Death counter
-    maxFoods: 3,  // Maximum 3 foods on board
+    maxFoods: 5,  // Maximum 5 foods on board
     foodInterval: 30000  // Food generation interval (30 seconds)
 };
 

@@ -76,10 +76,10 @@ function updateGame() {
         newHead.x = (newHead.x + gameState.boardWidth) % gameState.boardWidth;
         newHead.y = (newHead.y + gameState.boardHeight) % gameState.boardHeight;
 
-        // Check self collision
-        if (checkCollision(newHead)) {
+        // Check self collision only with existing body segments
+        if (gameState.snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)) {
             resetSnake();
-            gameState.pendingMoves = Math.max(0, gameState.pendingMoves - 1);  // Ensure collision consumes a move
+            gameState.pendingMoves = Math.max(0, gameState.pendingMoves - 1);
             return true;
         }
 
@@ -158,25 +158,16 @@ function changeDirection() {
 }
 
 function resetSnake() {
-    // Keep direction weights and score unchanged
-    const savedDirectionScores = {...gameState.directionScores};
-    const savedDirectionAttempts = {...gameState.directionAttempts};
-    const savedScore = gameState.score;
-    const savedDeaths = gameState.deaths;
+    // Keep all game state unchanged
+    const savedState = {...gameState};
     
-    // Reset snake position and length
-    gameState.snake = [{x: 20, y: 15}];
+    // Only reset direction and increment death counter
     gameState.direction = {x: 1, y: 0};
     gameState.directionChanges = 0;
     gameState.lastChangeTime = Date.now();
-    gameState.deaths = savedDeaths + 1;
+    gameState.deaths = savedState.deaths + 1;
     
-    // Restore saved data
-    gameState.directionScores = savedDirectionScores;
-    gameState.directionAttempts = savedDirectionAttempts;
-    gameState.score = savedScore;
-    
-    // Ensure at least one food on reset
+    // Generate new food if needed
     if (gameState.foods.length === 0) {
         const newFood = generateNewFood();
         if (newFood) {
@@ -300,10 +291,10 @@ app.get('/api/token-transactions', async (req, res) => {
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
     
-    // Add game loop to check for moves every 50ms
+    // 减少状态更新间隔，提高响应性
     setInterval(() => {
         if (gameState.pendingMoves > 0) {
             updateGame();
         }
-    }, 50);
+    }, 20); // 从 50ms 改为 20ms
 }); 

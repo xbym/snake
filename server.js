@@ -88,8 +88,12 @@ function updateGame() {
             food.x === newHead.x && food.y === newHead.y
         );
 
+        // 先添加新头部
+        gameState.snake.unshift(newHead);
+
         if (foodIndex !== -1) {
-            console.log('Food eaten! Snake length before:', gameState.snake.length);
+            // 吃到食物时，保留尾部（自然增长）
+            console.log('Food eaten! Snake length:', gameState.snake.length);
             gameState.foods.splice(foodIndex, 1);
             gameState.score++;
             
@@ -103,12 +107,11 @@ function updateGame() {
 
             const currentDirName = getDirName(gameState.direction);
             gameState.directionScores[currentDirName] = (gameState.directionScores[currentDirName] || 0) + 1;
-            console.log('Snake length after eating:', gameState.snake.length);
         } else {
+            // 没吃到食物时，移除尾部（保持长度不变）
             gameState.snake.pop();
         }
 
-        gameState.snake.unshift(newHead);
         console.log('Final snake length:', gameState.snake.length);
         gameState.lastMoveTime = now;
         gameState.pendingMoves = Math.max(0, gameState.pendingMoves - 1);  // Use Math.max to prevent negative values

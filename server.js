@@ -33,7 +33,7 @@ let gameState = {
     boardHeight: 30,  // 600/20
     lastMoveTime: Date.now(),  // Last move time
     pendingMoves: 1,  // 初始设置为1，确保蛇开始就能移动
-    maxMovesPerSecond: 2,  // 增加移动速度到每秒2次
+    maxMovesPerSecond: 1,  // 降低移动速度到每秒1次
     deaths: 0,  // Death counter
     maxFoods: 10,  // Maximum 10 foods on board
     foodInterval: 15000  // 减少食物生成间隔到15秒
@@ -142,17 +142,26 @@ function changeDirection() {
         {x: 0, y: -1}   // up
     ];
 
-    // Randomly select new direction (excluding current direction)
-    const currentDir = gameState.direction;
-    const newDirs = possibleDirs.filter(dir => 
-        !(dir.x === currentDir.x && dir.y === currentDir.y)
-    );
+    // 避免选择会导致立即碰撞的方向
+    const safeDirs = possibleDirs.filter(dir => {
+        const nextPos = {
+            x: (gameState.snake[0].x + dir.x + gameState.boardWidth) % gameState.boardWidth,
+            y: (gameState.snake[0].y + dir.y + gameState.boardHeight) % gameState.boardHeight
+        };
+        return !gameState.snake.slice(2).some(segment => 
+            segment.x === nextPos.x && segment.y === nextPos.y
+        );
+    });
 
-    const randomDir = newDirs[Math.floor(Math.random() * newDirs.length)];
-    const dirName = getDirName(randomDir);
-    gameState.directionAttempts[dirName]++;
-    gameState.direction = randomDir;
-    gameState.directionChanges++;
+    // 如果有安全的方向，从中随机选择一个
+    if (safeDirs.length > 0) {
+        const randomDir = safeDirs[Math.floor(Math.random() * safeDirs.length)];
+        const dirName = getDirName(randomDir);
+        gameState.directionAttempts[dirName]++;
+        gameState.direction = randomDir;
+        gameState.directionChanges++;
+    }
+    // 如果没有安全的方向，保持当前方向
 }
 
 function resetSnake() {
@@ -176,8 +185,8 @@ function resetSnake() {
 }
 
 function checkCollision(head) {
-    // Check self collision (starting from second body segment)
-    return gameState.snake.slice(1).some(segment => 
+    // 只检查与身体其他部分的碰撞（从第二个身体段开始）
+    return gameState.snake.slice(2).some(segment => 
         segment.x === head.x && segment.y === head.y
     );
 }
@@ -214,6 +223,41 @@ app.get('/api/state', (req, res) => {
 app.post('/api/update-game', (req, res) => {
     updateGame();
     res.json(gameState);
+});
+
+// 添加远程控制API
+app.post('/api/remote-control', (req, res) => {
+    const { action } = req.body;
+    
+    if (action === 'suicide') {
+        // 保存当前状态
+        const currentLength = gameState.snake.length;
+        const savedState = {...gameState};
+        
+        // 减半长度（向上取整）
+        const newLength = Math.ceil(currentLength / 2);
+        gameState.snake = gameState.snake.slice(0, newLength);
+        
+        // 增加死亡次数
+        gameState.deaths++;
+        
+        // 重置方向为向右
+        gameState.direction = {x: 1, y: 0};
+        gameState.directionChanges = 0;
+        gameState.lastChangeTime = Date.now();
+        
+        res.json({
+            success: true,
+            message: `Snake length reduced from ${currentLength} to ${newLength}`,
+            deaths: gameState.deaths,
+            gameState
+        });
+    } else {
+        res.status(400).json({
+            success: false,
+            message: 'Invalid action'
+        });
+    }
 });
 
 // Modify token transaction API to trigger game update when new transactions are received
@@ -299,5 +343,5 @@ app.listen(port, () => {
             gameState.pendingMoves = 1;
         }
         updateGame();
-    }, 500); // 调整为500ms，让移动更平滑
+    }, 1000); // 调整为1000ms，让移动更平滑
 }); 
